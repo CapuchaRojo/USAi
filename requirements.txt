@@ -1,0 +1,16 @@
+# Core agents and orchestration
+openai>=1.10.0
+python-dotenv>=1.0.0
+supabase>=1.0.3
+
+# Optional logging / debug tools
+httpx
+requests
+loguru
+
+# Optional for advanced typing and data validation
+pydantic
+
+# Local dev / linting (optional)
+black
+flake8
