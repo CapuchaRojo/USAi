@@ -1,9 +1,9 @@
-from supabase import create_client, Client
+import importlib
 
-supabase: Client = None
-
-def init(config):
-    global supabase
-    print("    ↳ Connecting to Supabase...")
-    supabase = create_client(config["SUPABASE_URL"], config["SUPABASE_KEY"])
-    print("    ↳ Connection established.")
+def load_agent(agent_name):
+    try:
+        module = importlib.import_module(f"agents.{agent_name}.{agent_name}")
+        return module
+    except ModuleNotFoundError as e:
+        print(f"[ERROR] Agent '{agent_name}' could not be loaded:", str(e))
+        return None
