@@ -1,0 +1,6 @@
+- Bolt.new - Live UI deck + agent switching panel
+- Supabase - Auth, DB, Agent Logs, task memory
+- Stripe - Subscriptions + on-demand agent access
+- Tavus + ElevenLabs - Agent Face + voice delivery
+- Github Actions - Real-time repo integrations + PR watchers
+- Sentry - Error monitoring across deployed agent flows
