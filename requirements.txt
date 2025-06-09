@@ -1,16 +1,69 @@
-# Core agents and orchestration
-openai>=1.10.0
-python-dotenv>=1.0.0
-supabase>=1.0.3
+import os
 
-# Optional logging / debug tools
-httpx
-requests
-loguru
+# Define the folder structure
+folder_structure = {
+    "usaix": {
+        "frontend": [
+            "ConsoleWindow.jsx",
+            "AgentDashboard.jsx",
+            "AppRouter.jsx"
+        ],
+        "backend": [
+            "routes",
+            "services",
+            "files"
+        ],
+        "database": [
+            "schema.sql"
+        ],
+       ['services']
 
-# Optional for advanced typing and data validation
-pydantic
 
-# Local dev / linting (optional)
-black
-flake8
+# Create the folder structure
+base_path = "/mnt/data/usaix"
+os.makedirs(base_path, exist_ok=True)
+
+# Create the folder structure
+folder_structure = {
+    "usaix": {
+        "frontend": [
+            "ConsoleWindow.jsx",
+            "AgentDashboard.jsx",
+            "AppRouter.jsx"
+        ],
+        "backend": [
+            "routes",
+            "services",
+            "files"
+        ],
+        "database": [
+            "services"],
+       _param=["services"],
+
+)
+
+# Create the folder structure
+base_path = "/mnt/data/usaix"
+os.makedirs(base_path, exist_ok=True)
+
+# Create the folder structure
+folder_structure = {
+    "usaix": {
+        "frontend": [
+            "ConsoleWindow.jsx",
+            "AgentDashboard.jsx",
+            "AppRouter.jsx"
+        ],
+        "files",
+<|endoffile|># Open the file
+with open('filename.txt', 'w') as file_object:
+
+# Open the file
+file_contents = file_object.read()
+
+# Print the contents of the file
+print(file_contents)
+
+# Close the function
+print(file_object)
+
