@@ -1,7 +1,7 @@
 # USAi
 Welcome to the Legion. One of us. One of us.
 
-# 🇺🇸 USAi: United Synapses of AI  
+# USAi: United Synapses of AI  
 > *"We don’t just make agents. We make results."*
 
 ---
@@ -49,16 +49,16 @@ From automating startup launches to orchestrating full-stack deployment flows, U
 git clone git clone https://github.com/CapuchaRojo/USAi.git
 cd USAi
 
-2. Set Up Your Environment
+###2. Set Up Your Environment
 Create a .env file:
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_KEY=your-anon-or-service-role-key
 OPENAI_API_KEY=your-openai-api-key
 
-3. Install Dependencies
+###3. Install Dependencies
 pip install -r requirements.txt
 
-4. Run the Agent
+###4. Run the Agent
 python agents/supabase_agent/supabase_agent.py
 ⸻
 
