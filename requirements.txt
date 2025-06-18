@@ -1,69 +1,11 @@
-import os
-
-# Define the folder structure
-folder_structure = {
-    "usaix": {
-        "frontend": [
-            "ConsoleWindow.jsx",
-            "AgentDashboard.jsx",
-            "AppRouter.jsx"
-        ],
-        "backend": [
-            "routes",
-            "services",
-            "files"
-        ],
-        "database": [
-            "schema.sql"
-        ],
-       ['services']
-
-
-# Create the folder structure
-base_path = "/mnt/data/usaix"
-os.makedirs(base_path, exist_ok=True)
-
-# Create the folder structure
-folder_structure = {
-    "usaix": {
-        "frontend": [
-            "ConsoleWindow.jsx",
-            "AgentDashboard.jsx",
-            "AppRouter.jsx"
-        ],
-        "backend": [
-            "routes",
-            "services",
-            "files"
-        ],
-        "database": [
-            "services"],
-       _param=["services"],
-
-)
-
-# Create the folder structure
-base_path = "/mnt/data/usaix"
-os.makedirs(base_path, exist_ok=True)
-
-# Create the folder structure
-folder_structure = {
-    "usaix": {
-        "frontend": [
-            "ConsoleWindow.jsx",
-            "AgentDashboard.jsx",
-            "AppRouter.jsx"
-        ],
-        "files",
-<|endoffile|># Open the file
-with open('filename.txt', 'w') as file_object:
-
-# Open the file
-file_contents = file_object.read()
-
-# Print the contents of the file
-print(file_contents)
-
-# Close the function
-print(file_object)
-
+supabase-py==1.0.3
+requests>=2.31.0
+python-dotenv>=1.0.0
+psycopg2-binary>=2.9.5     # For PostgreSQL interactions
+openai>=1.14.3             # If using GPT-based agent tools
+numpy>=1.24.0              # For any embeddings or math ops
+tqdm                       # For progress bars in scripts (nice-to-have)
+flask                     # If you're building a web server locally
+fastapi                   # If you're doing agent APIs
+uvicorn                   # FastAPI ASGI server
+pandas                    # If you're working with CSVs / tabular data
