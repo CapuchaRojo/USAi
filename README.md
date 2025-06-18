@@ -46,7 +46,7 @@ From automating startup launches to orchestrating full-stack deployment flows, U
 
 ### 1. Clone the Repo
 ```bash
-git clone https://github.com/your-username/USAi.git
+git clone git clone https://github.com/CapuchaRojo/USAi.git
 cd USAi
 
 2. Set Up Your Environment
