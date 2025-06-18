@@ -1,118 +1,184 @@
-# USAi
-Welcome to the Legion. One of us. One of us.
+🇺🇸 USAi: United Synapses of AI
 
-# USAi: United Synapses of AI  
-> *"We don’t just make agents. We make results."*
+"We don’t just build agents. We forge an AI civilization."
 
----
+⚡ Overview
 
-## ⚡ Overview
+USAi is the universal Agent Operating System for orchestrating autonomous AI swarms that self-evolve, specialize, and deploy at the speed of thought.
 
-**USAi** is your all-in-one **Agent Operating System**.  
-It isn't just a product — it's a *platform* that spins up elite AI agents on demand.
+From launching full-stack startups to scanning for funding and emulating SaaS workflows, USAi operates through Legion Protocol: a recursive loop of:
 
-From automating startup launches to orchestrating full-stack deployment flows, USAi empowers founders, teams, and builders to skip the busywork and scale ideas into action — instantly.
+Emulate → Condense → Repurpose → Redeploy("As above, so below.")
 
----
+Born from the swarm success of SonNetAi-Hackathon-2025, USAi refines and scales that architecture with a Supabase/Postgres neural spine, SupaCore schema, and real-time function routing.
 
-## 🧠 Key Features
+🧠 Core Capabilities
 
-| Feature                    | Description                                                                 |
-|---------------------------|-----------------------------------------------------------------------------|
-| ⚙️ Modular Agent Framework | Plug-and-play architecture for agent modules (e.g. Supabase, Funding, UI)  |
-| 🧞 Spawn-on-Command        | Spin up expert agents in real-time using Bolt.new, Supabase RPC, or API     |
-| 🔐 Secure Access Control   | Built-in Supabase RLS and user-scoped data pipelines                        |
-| 💬 Natural Language Coding | GPT-4o-powered interpretation of prompts into actions                       |
-| 🌐 Realtime + Scalable     | Built on Supabase, Postgres, and WebSocket listeners                        |
-| ⚡ MVP Factory             | Legion-based AI startup launcher that generates code, SEO, funding paths    |
+Feature
 
----
+Description
 
-## 🧩 Agent Modules (The Legion)
+🧬 Swarm Intelligence Core
 
-| Agent Name       | Role                                                                 |
-|------------------|----------------------------------------------------------------------|
-| 🧠 `supabase_agent` | Create, read, update, delete, and define SQL tables dynamically     |
-| 🛠 `startup_deity`  | Guides founders through building their business, brand, & backend  |
-| 🔍 `funding_seeker` | Scans public + private grant APIs, VC signals, and funding leads   |
-| 🎨 `ui_composer`    | Uses Figma + Tailwind templates to build frontend scaffolds         |
-| ⚡ `api_mesh`       | Connects external APIs into unified prompt-to-function pipelines    |
+Modular agents operate as collective intelligence using semantic memory
 
-> *...and more coming. The Legion expands with every new use case.*
+🧞 Spawn-on-Command
 
----
+Spin up expert agents in real-time (via Bolt.new, RPC, CLI, API)
 
-## 🚀 Quick Start
+🧠 Phyloop Dispatch Engine
 
-### 1. Clone the Repo
-```bash
-git clone git clone https://github.com/CapuchaRojo/USAi.git
-cd USAi
+Recursive orchestration loop using perplexity sonar & agent reflex routing
 
-###2. Set Up Your Environment
-Create a .env file:
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_KEY=your-anon-or-service-role-key
-OPENAI_API_KEY=your-openai-api-key
+🔐 Scoped Access Control
 
-###3. Install Dependencies
-pip install -r requirements.txt
+Built-in Supabase RLS, scoped key management, and agent lineage tracking
 
-###4. Run the Agent
-python agents/supabase_agent/supabase_agent.py
-⸻
+🛰 Emulation Engine
 
-📁 Directory Structure
+Emulates SaaS tools, rewires flows, deploys as auto-contained micro-agents
+
+🗃 Vectorized Memory
+
+pgvector + HNSW search for ultra-fast semantic recall and clustering
+
+⚙️ MVP Factory
+
+Generate startup-grade backends, UI, and growth stack in minutes
+
+📦 Repo Structure
 
 USAi/
 ├── .env
 ├── README.md
-├── requirements.txt
 ├── config.py
-│
+├── requirements.txt
 ├── agents/
 │   ├── supabase_agent/
 │   ├── startup_deity/
 │   ├── ...
-│
+├── supabase/
+│   ├── functions/
+│   ├── migrations/
+│   ├── config.toml
+│   └── .env
+├── vault/                         # Encrypted keys, manifesto, policies
 ├── database/
-│   ├── create_tables.sql
+│   ├── schema.sql
 │   ├── policies.sql
 │   └── functions.sql
-│
-└── examples/
-    ├── demo_insert.py
-    └── demo_prompt_to_sql.py
-⸻
+├── usa_control/
+│   ├── AIController.swift
+│   └── Config/
+├── neural_core/
+│   └── Core_Study_References/
+├── docs/
+│   ├── Prime_Agent_Manifesto/
+│   ├── Command_Protocols/
+│   └── Execution_Blueprints/
 
-🛡 Security
-	•	All agents use Row-Level Security (RLS) to protect user data
-	•	API keys are stored in .env and loaded via dotenv
-	•	Agents enforce scoped access and activity logging
+🧩 The Legion (Agent Modules)
 
-⸻
+Agent Name
 
-💡 Vision
+Role
 
-USAi is more than a codebase.
-It’s the foundation for a decentralized AI nation — where your Legion of agents helps launch ideas, connect to systems, and remove friction from creation.
+🧠 supabase_agent
 
-⸻
+Create/read/update/delete SQL tables dynamically, with pgvector support
 
-🏆 Built For
+🧬 phyloop_dispatch
 
-World’s Largest Hackathon — Bolt.New × Devpost
+Core reflex router managing emulation/deployment loop
+
+🧑‍💻 startup_deity
+
+MVP builder, brand generator, and technical co-founder in a box
+
+💸 funding_seeker
+
+API crawler for grants, VC signals, corporate accelerators
+
+🎨 ui_composer
+
+Tailwind + Figma orchestrator for rapid UI scaffolds
+
+📡 perplexity_sonar
+
+Agent signal triangulation & vector proximity querying
+
+Every new use case spawns a new agent. The Legion expands.
+
+🚀 Getting Started
+
+# 1. Clone the Repo
+$ git clone https://github.com/CapuchaRojo/USAi.git
+$ cd USAi
+
+# 2. Setup Environment
+$ cp .env.example .env
+# Then add your keys manually:
+SUPABASE_URL=...
+SUPABASE_KEY=...
+OPENAI_API_KEY=...
+
+# 3. Install Requirements
+$ pip install -r requirements.txt
+
+# 4. Deploy Supabase DB Schema
+$ npx supabase db reset
+$ npx supabase functions deploy hello-world
+
+# 5. Run a Core Agent
+$ python agents/supabase_agent/supabase_agent.py
+
+🛠 SupaCore SQL Schema
+
+Tables include:
+
+agents: identity, skills, state, vector_fingerprint
+
+conversations: threaded logs
+
+embeddings: vectorized knowledge
+
+commands: reusable behaviors
+
+logs: telemetry
+
+agent_tasks, agent_events, files
+
+Uses pgvector + HNSW indexing for fast AI memory recall.
+
+🔒 Security
+
+Row-Level Security via Supabase policies
+
+Scoped tokens in .env
+
+Command audit trail via logs
+
+🏆 Built For Devpost & Bolt.new HACKATHON
+
+
 
 Includes:
-	•	💎 $1,700+ in perks
-	•	🔧 Full Bolt Pro access
-	•	📦 Supabase, RevenueCat, Sentry, Pica, Tavus, and more integrations
 
-⸻
+$1.7K+ devtool credits
 
-📬 Contact
-	•	Project Lead: Adam Mlady; CEO of a Storm is Coming LLC
-	•	Powered by: 🧠 Professor Synapse (AI Assistant)
-	•	WEBSITE: https://www.AStormsComing.com | Linkedin: https://linkedin.com/in/redhood555
-        
-        
+Sentry, Tavus, RevenueCat, ElevenLabs, Algorand integrations
+
+🤝 Credits
+
+Project Lead: Adam Mlady (@CapuchaRojo)
+
+System Architect: Professor Synapse
+
+Inspiration: SonNetAi Hackathon Team
+
+📡 https://www.astormscoming.com
+
+The Synapses are United. Now let’s build the future.
+
+🧠🧬⚡
+
