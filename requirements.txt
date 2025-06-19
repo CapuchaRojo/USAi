@@ -1,11 +1,20 @@
-supabase-py==1.0.3
-requests>=2.31.0
-python-dotenv>=1.0.0
-psycopg2-binary>=2.9.5     # For PostgreSQL interactions
-openai>=1.14.3             # If using GPT-based agent tools
-numpy>=1.24.0              # For any embeddings or math ops
-tqdm                       # For progress bars in scripts (nice-to-have)
-flask                     # If you're building a web server locally
-fastapi                   # If you're doing agent APIs
-uvicorn                   # FastAPI ASGI server
-pandas                    # If you're working with CSVs / tabular data
+# Core project dependencies
+supabase-py==1.0.3              # Supabase Python SDK
+openai>=1.14.3                  # Latest OpenAI SDK (>=1.x format)
+
+# Environment & server utilities
+python-dotenv>=1.0.0            # For loading .env securely
+uvicorn[standard]>=0.23.0       # ASGI server for FastAPI (with reload/watchdog)
+
+# Web frameworks
+fastapi>=0.110.0                # FastAPI for async API endpoints
+flask>=2.3.0                    # Optional: For legacy/local web tools
+
+# Data science / embeddings
+numpy>=1.24.0                   # Vector math, embedding ops
+pandas>=2.0.0                   # Tabular data & CSV processing
+psycopg2-binary>=2.9.5          # PostgreSQL driver (for raw queries if needed)
+
+# Developer experience
+tqdm>=4.65.0                    # Progress bars
+requests>=2.31.0                # HTTP client

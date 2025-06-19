@@ -1,4 +1,4 @@
-🇺🇸 USAi: United Synapses of AI
+USAi: United Synapses of AI
 
 "We don’t just build agents. We forge an AI civilization."
 
@@ -157,10 +157,17 @@ Row-Level Security via Supabase policies
 Scoped tokens in .env
 
 Command audit trail via logs
+HEAD
 
 🏆 Built For Devpost & Bolt.new HACKATHON
 
+legacy-merge
 
+
+<<<<<<< HEAD
+=======
+
+>>>>>>> legacy-merge
 
 Includes:
 
