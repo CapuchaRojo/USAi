@@ -18,16 +18,14 @@
               {Math.floor(activeAgents / (agents.length || 1) * 100)}%
         <div className="grid grid-cols-2 gap-4 flex-grow max-w-md">
             </div>
-        {/* Phase Metrics */}
-            <div className="text-sm text-steel-300 mt-1">Swarm Efficiency</div>
-        
-          </div>
-        </div>
-        </div>
-          <svg>
-       </div>
-
-            </text>
+         {/* Phase Metrics */}
+    <div className="text-sm text-steel-300 mt-1">Swarm Efficiency</div>
+  </div>
+  {/* If you want to include an SVG, do it like this: */}
+  <svg>
+    <text x="10" y="20">{currentPhase}</text>
+  </svg>
+</div>
       
               {currentPhase}
       {/* Phase Labels */}
