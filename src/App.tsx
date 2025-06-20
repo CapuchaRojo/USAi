@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { createClient, Session } from '@supabase/supabase-js'
+import { Session } from '@supabase/supabase-js'
+import { supabase } from './lib/supabaseClient'
 import { Header } from './components/Header'
 import { SwarmMap } from './components/SwarmMap'
 import { ControlPanel } from './components/ControlPanel'
@@ -7,11 +8,6 @@ import { Oracle } from './components/Oracle'
 import { CommandTerminal } from './components/CommandTerminal'
 import { AgentStatus } from './components/AgentStatus'
 import { LegionProtocol } from './components/LegionProtocol'
-
-// Initialize Supabase client
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'http://localhost:54321'
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key'
-const supabase = createClient(supabaseUrl, supabaseKey)
 
 export interface Agent {
   id: string
