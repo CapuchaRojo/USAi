@@ -1,6 +1,5 @@
 import React from 'react'
 import { Session } from '@supabase/supabase-js'
-import { Brain, Zap, Shield, Terminal, Eye, Settings } from 'lucide-react'
 
 interface HeaderProps {
   isConnected: boolean
@@ -11,14 +10,14 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ isConnected, activeView, onViewChange, session }) => {
   const navItems = [
-    { id: 'swarm', label: 'Swarm Map', icon: Brain },
-    { id: 'oracle', label: 'Oracle', icon: Eye },
-    { id: 'control', label: 'Control', icon: Settings },
-    { id: 'terminal', label: 'Terminal', icon: Terminal }
+    { id: 'swarm', label: 'Swarm Map', icon: '🗺️' },
+    { id: 'oracle', label: 'Oracle', icon: '🔮' },
+    { id: 'control', label: 'Control', icon: '🎛️' },
+    { id: 'terminal', label: 'Terminal', icon: '💻' }
   ]
 
   return (
-    <header className="glass-panel border-b border-steel-700/50 sticky top-0 z-50">
+    <header className="glass-panel border-b border-steel-700 sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo & Title */}
@@ -26,14 +25,17 @@ export const Header: React.FC<HeaderProps> = ({ isConnected, activeView, onViewC
             <div className="relative">
               <div className="w-10 h-10 rounded-full bg-gradient-to-r from-neon-pink to-neon-blue p-0.5">
                 <div className="w-full h-full rounded-full bg-steel-900 flex items-center justify-center">
-                  <Zap className="w-5 h-5 text-neon-pink" />
+                  <span className="text-xl">⚡</span>
                 </div>
               </div>
               <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-green-400 animate-signal-pulse"></div>
             </div>
             <div>
               <h1 className="text-xl font-display font-bold text-steel-100">
-                USAi: Legion OS
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-neon-pink to-neon-blue">
+                  USAi
+                </span>
+                <span className="text-steel-300">: Legion OS</span>
               </h1>
               <p className="text-xs text-steel-400 font-mono">
                 United Synapses of AI • v1.0.0
@@ -44,7 +46,6 @@ export const Header: React.FC<HeaderProps> = ({ isConnected, activeView, onViewC
           {/* Navigation */}
           <nav className="flex items-center space-x-1">
             {navItems.map((item) => {
-              const Icon = item.icon
               const isActive = activeView === item.id
               
               return (
@@ -54,12 +55,12 @@ export const Header: React.FC<HeaderProps> = ({ isConnected, activeView, onViewC
                   className={`
                     flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200
                     ${isActive 
-                      ? 'bg-neon-pink/20 text-neon-pink border border-neon-pink/50 shadow-neon-pink/20' 
+                      ? 'bg-steel-800 text-neon-pink glow-pink' 
                       : 'text-steel-300 hover:text-steel-100 hover:bg-steel-800/50'
                     }
                   `}
                 >
-                  <Icon className="w-4 h-4" />
+                  <span className="mr-2">{item.icon}</span>
                   <span className="text-sm font-medium">{item.label}</span>
                 </button>
               )
@@ -80,15 +81,19 @@ export const Header: React.FC<HeaderProps> = ({ isConnected, activeView, onViewC
               </div>
             )}
             <div className="flex items-center space-x-2">
-              <div className={`status-indicator ${isConnected ? 'online' : 'offline'}`}></div>
+              <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                isConnected 
+                  ? 'bg-green-900/30 text-green-400' 
+                  : 'bg-red-900/30 text-red-400'
+              }`}>
+                {isConnected ? 'CONNECTED' : 'OFFLINE'}
+              </div>
               <span className="text-sm text-steel-300">
-                {isConnected ? 
-                  (import.meta.env.VITE_PREVIEW_MODE === 'true' ? 'Legion Online (Preview)' : 'Legion Online') 
-                  : 'Connecting...'
-                }
+                Legion OS
               </span>
             </div>
-            <Shield className="w-5 h-5 text-neon-blue" />
+            </div>
+            <div className="w-5 h-5 text-neon-blue">🛡️</div>
           </div>
         </div>
       </div>

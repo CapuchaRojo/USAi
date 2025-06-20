@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Terminal, Send, History, Zap } from 'lucide-react'
 import { Agent } from '../App'
 
 interface CommandTerminalProps {
@@ -32,412 +31,177 @@ export const CommandTerminal: React.FC<CommandTerminalProps> = ({
   onExecuteCommand 
 }) => {
   const [currentCommand, setCurrentCommand] = useState('')
-  const [history, setHistory] = useState<TerminalEntry[]>([])
+  const [output, setOutput] = useState<{ type: string; content: string }[]>([])
   const [historyIndex, setHistoryIndex] = useState(-1)
   const [commandHistory, setCommandHistory] = useState<string[]>([])
   const terminalRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
 
+  // Initial system message
   useEffect(() => {
-    // Initialize terminal with welcome message
-    addEntry('system', 'USAi Legion Terminal v1.0.0 - Ready for commands')
+    addEntry('system', 'USAi Legion OS Terminal initialized')
     addEntry('system', 'Type "help" for available commands')
   }, [])
 
+  // Auto-scroll to bottom
   useEffect(() => {
-    // Auto-scroll to bottom
     if (terminalRef.current) {
       terminalRef.current.scrollTop = terminalRef.current.scrollHeight
     }
-  }, [history])
+  }, [output])
 
-  const addEntry = (type: TerminalEntry['type'], content: string, agent?: string) => {
-    const entry: TerminalEntry = {
-      id: Date.now().toString(),
-      type,
-      content,
-      timestamp: new Date(),
-      agent
-    }
-    setHistory(prev => [...prev, entry])
+  const addEntry = (type: string, content: string) => {
+    setOutput(prev => [...prev, { type, content }])
   }
 
-  const executeCommand = async (command: string) => {
-    if (!command.trim()) return
-
-    // Add command to history
-    addEntry('command', command)
-    setCommandHistory(prev => [...prev, command])
-    setHistoryIndex(-1)
-
-    // Process command
-    const [cmd, ...args] = command.trim().split(' ')
+  const executeCommand = async (cmd: string) => {
+    addEntry('input', `> ${cmd}`)
     
-    switch (cmd.toLowerCase()) {
-      case 'help':
-        addEntry('output', 'Available commands:')
-        addEntry('output', '  help - Show this help message')
-        addEntry('output', '  list - List all agents')
-        addEntry('output', '  status <agent> - Show agent status')
-        addEntry('output', '  activate <agent> - Activate an agent')
-        addEntry('output', '  deactivate <agent> - Deactivate an agent')
-        addEntry('output', '  spawn <name> <type> - Create new agent')
-        addEntry('output', '  acquire <agent> <skill> <value> - Agent acquires new skill')
-        addEntry('output', '  evolve <agent> [factor] - Evolve agent skills')
-        addEntry('output', '  emulate <agent> <module> [desc] - Emulate system module')
-        addEntry('output', '  condense <agent> <utility> [desc] - Condense core utilities')
-        addEntry('output', '  repurpose <agent> <tool> [desc] - Repurpose as new tool')
-        addEntry('output', '  redeploy <agent> <tool> [desc] - Redeploy optimized tool')
-        addEntry('output', '  mission <name> - Create new mission')
-        addEntry('output', '  clear - Clear terminal')
-        addEntry('output', '  legion - Show Legion Protocol status')
-        break
-
-      case 'list':
-        addEntry('output', `Found ${agents.length} agents:`)
-        agents.forEach(agent => {
-          addEntry('output', `  ${agent.agent_name} (${agent.type}) - ${agent.status}`)
-        })
-        break
-
-      case 'status':
-        if (args.length === 0) {
-          addEntry('error', 'Usage: status <agent_name>')
-        } else {
-          const agentName = args.join(' ')
-          const agent = agents.find(a => a.agent_name.toLowerCase().includes(agentName.toLowerCase()))
-          if (agent) {
-            addEntry('output', `Agent: ${agent.agent_name}`)
-            addEntry('output', `  Type: ${agent.type}`)
-            addEntry('output', `  Status: ${agent.status}`)
-            addEntry('output', `  State: ${agent.current_state}`)
-            addEntry('output', `  Created: ${new Date(agent.created_at).toLocaleString()}`)
-            if (agent.skills && Object.keys(agent.skills).length > 0) {
-              addEntry('output', '  Skills:')
-              Object.entries(agent.skills).forEach(([skill, value]) => {
-                addEntry('output', `    ${skill}: ${typeof value === 'number' ? (value * 100).toFixed(0) + '%' : value}`)
-              })
-            }
-          } else {
-            addEntry('error', `Agent "${agentName}" not found`)
-          }
-        }
-        break
-
-      case 'activate':
-        if (args.length === 0) {
-          addEntry('error', 'Usage: activate <agent_name>')
-        } else {
-          const agentName = args.join(' ')
-          const agent = agents.find(a => a.agent_name.toLowerCase().includes(agentName.toLowerCase()))
-          if (agent) {
-            addEntry('output', `Activating agent: ${agent.agent_name}`)
-            // This would trigger the actual activation
-            onExecuteCommand(`activate ${agent.id}`)
-          } else {
-            addEntry('error', `Agent "${agentName}" not found`)
-          }
-        }
-        break
-
-      case 'deactivate':
-        if (args.length === 0) {
-          addEntry('error', 'Usage: deactivate <agent_name>')
-        } else {
-          const agentName = args.join(' ')
-          const agent = agents.find(a => a.agent_name.toLowerCase().includes(agentName.toLowerCase()))
-          if (agent) {
-            addEntry('output', `Deactivating agent: ${agent.agent_name}`)
-            onExecuteCommand(`deactivate ${agent.id}`)
-          } else {
-            addEntry('error', `Agent "${agentName}" not found`)
-          }
-        }
-        break
-
-      case 'acquire':
-        if (args.length < 3) {
-          addEntry('error', 'Usage: acquire <agent_name> <skill_name> <value>')
-          addEntry('output', 'Example: acquire Oracle-01 prediction 0.95')
-        } else {
-          const [agentName, skillName, valueStr] = args
-          const skillValue = parseFloat(valueStr)
-          
-          if (isNaN(skillValue) || skillValue < 0 || skillValue > 1) {
-            addEntry('error', 'Skill value must be a number between 0 and 1')
-            break
-          }
-          
-          const agent = agents.find(a => a.agent_name.toLowerCase().includes(agentName.toLowerCase()))
-          if (agent) {
-            try {
-              addEntry('output', `Initiating skill acquisition for ${agent.agent_name}...`)
-              addEntry('output', `Legion Protocol: CONDENSE → REPURPOSE`)
-              await onAcquireSkill(agent.id, skillName, skillValue)
-              addEntry('output', `✅ ${agent.agent_name} acquired ${skillName} = ${(skillValue * 100).toFixed(0)}%`)
-              addEntry('system', `Skill acquisition logged in neural core`)
-            } catch (error) {
-              addEntry('error', `Failed to acquire skill: ${error.message}`)
-            }
-          } else {
-            addEntry('error', `Agent "${agentName}" not found`)
-          }
-        }
-        break
-
-      case 'evolve':
-        if (args.length === 0) {
-          addEntry('error', 'Usage: evolve <agent_name> [evolution_factor]')
-          addEntry('output', 'Example: evolve Oracle-01 0.15')
-        } else {
-          const agentName = args[0]
-          const evolutionFactor = args[1] ? parseFloat(args[1]) : 0.1
-          
-          if (isNaN(evolutionFactor) || evolutionFactor < 0 || evolutionFactor > 1) {
-            addEntry('error', 'Evolution factor must be a number between 0 and 1')
-            break
-          }
-          
-          const agent = agents.find(a => a.agent_name.toLowerCase().includes(agentName.toLowerCase()))
-          if (agent) {
-            try {
-              addEntry('output', `Initiating skill evolution for ${agent.agent_name}...`)
-              addEntry('output', `Legion Protocol: EMULATE → CONDENSE → REPURPOSE → REDEPLOY`)
-              await onEvolveSkills(agent.id, evolutionFactor)
-              addEntry('output', `✅ ${agent.agent_name} skills evolved (factor: ${evolutionFactor})`)
-              addEntry('system', `Evolution cycle completed - agent redeployed`)
-            } catch (error) {
-              addEntry('error', `Failed to evolve skills: ${error.message}`)
-            }
-          } else {
-            addEntry('error', `Agent "${agentName}" not found`)
-          }
-        }
-        break
-
-      case 'emulate':
-        if (args.length < 2) {
-          addEntry('error', 'Usage: emulate <agent_name> <module_name> [description]')
-          addEntry('output', 'Example: emulate Developer-01 auth_system "User authentication module"')
-        } else {
-          const agentName = args[0]
-          const moduleName = args[1]
-          const description = args.slice(2).join(' ') || `Emulating ${moduleName} module`
-          
-          const agent = agents.find(a => a.agent_name.toLowerCase().includes(agentName.toLowerCase()))
-          if (agent) {
-            try {
-              addEntry('output', `Initiating emulation phase for ${agent.agent_name}...`)
-              addEntry('output', `Legion Protocol: EMULATE → Analyzing ${moduleName}`)
-              await onSimulateEmulate(agent.id, moduleName, description)
-              addEntry('output', `✅ ${agent.agent_name} successfully emulated "${moduleName}"`)
-              addEntry('system', `Module patterns captured and stored`)
-            } catch (error) {
-              addEntry('error', `Failed to emulate module: ${error.message}`)
-            }
-          } else {
-            addEntry('error', `Agent "${agentName}" not found`)
-          }
-        }
-        break
-
-      case 'condense':
-        if (args.length < 2) {
-          addEntry('error', 'Usage: condense <agent_name> <utility_name> [description]')
-          addEntry('output', 'Example: condense Developer-01 auth_utility "Shared authentication utility"')
-        } else {
-          const agentName = args[0]
-          const utilityName = args[1]
-          const description = args.slice(2).join(' ') || `Condensing ${utilityName} utility`
-          
-          const agent = agents.find(a => a.agent_name.toLowerCase().includes(agentName.toLowerCase()))
-          if (agent) {
-            try {
-              addEntry('output', `Initiating condensation phase for ${agent.agent_name}...`)
-              addEntry('output', `Legion Protocol: CONDENSE → Extracting ${utilityName}`)
-              await onSimulateCondense(agent.id, utilityName, description)
-              addEntry('output', `✅ ${agent.agent_name} condensed core utility "${utilityName}"`)
-              addEntry('system', `Redundancy eliminated, efficiency improved`)
-            } catch (error) {
-              addEntry('error', `Failed to condense utility: ${error.message}`)
-            }
-          } else {
-            addEntry('error', `Agent "${agentName}" not found`)
-          }
-        }
-        break
-
-      case 'repurpose':
-        if (args.length < 2) {
-          addEntry('error', 'Usage: repurpose <agent_name> <tool_name> [description]')
-          addEntry('output', 'Example: repurpose Developer-01 signup_service "User signup as a service"')
-        } else {
-          const agentName = args[0]
-          const toolName = args[1]
-          const description = args.slice(2).join(' ') || `Repurposing ${toolName} tool`
-          
-          const agent = agents.find(a => a.agent_name.toLowerCase().includes(agentName.toLowerCase()))
-          if (agent) {
-            try {
-              addEntry('output', `Initiating repurpose phase for ${agent.agent_name}...`)
-              addEntry('output', `Legion Protocol: REPURPOSE → Creating ${toolName}`)
-              await onSimulateRepurpose(agent.id, toolName, description)
-              addEntry('output', `✅ ${agent.agent_name} repurposed utility as "${toolName}"`)
-              addEntry('system', `New tool registered in command registry`)
-            } catch (error) {
-              addEntry('error', `Failed to repurpose tool: ${error.message}`)
-            }
-          } else {
-            addEntry('error', `Agent "${agentName}" not found`)
-          }
-        }
-        break
-
-      case 'redeploy':
-        if (args.length < 2) {
-          addEntry('error', 'Usage: redeploy <agent_name> <tool_name> [description]')
-          addEntry('output', 'Example: redeploy Developer-01 signup_service "Deploy optimized signup service"')
-        } else {
-          const agentName = args[0]
-          const toolName = args[1]
-          const description = args.slice(2).join(' ') || `Redeploying ${toolName} tool`
-          
-          const agent = agents.find(a => a.agent_name.toLowerCase().includes(agentName.toLowerCase()))
-          if (agent) {
-            try {
-              addEntry('output', `Initiating redeploy phase for ${agent.agent_name}...`)
-              addEntry('output', `Legion Protocol: REDEPLOY → Activating ${toolName}`)
-              await onSimulateRedeploy(agent.id, toolName, description)
-              addEntry('output', `✅ ${agent.agent_name} successfully redeployed "${toolName}"`)
-              addEntry('system', `Tool active and ready for production use`)
-            } catch (error) {
-              addEntry('error', `Failed to redeploy tool: ${error.message}`)
-            }
-          } else {
-            addEntry('error', `Agent "${agentName}" not found`)
-          }
-        }
-        break
-
-      case 'spawn':
-        if (args.length < 2) {
-          addEntry('error', 'Usage: spawn <name> <type>')
-        } else {
-          const [name, type] = args
-          addEntry('output', `Spawning new ${type} agent: ${name}`)
-          onExecuteCommand(`spawn ${name} ${type}`)
-        }
-        break
-
-      case 'mission':
-        if (args.length === 0) {
-          addEntry('error', 'Usage: mission <mission_name>')
-        } else {
-          const missionName = args.join(' ')
-          addEntry('output', `Creating mission: ${missionName}`)
-          onExecuteCommand(`mission ${missionName}`)
-        }
-        break
-
-      case 'clear':
-        setHistory([])
-        addEntry('system', 'Terminal cleared')
-        break
-
-      case 'legion':
-        addEntry('output', 'Legion Protocol Status:')
-        addEntry('output', '  Phase: Emulate → Condense → Repurpose → Redeploy')
-        addEntry('output', `  Active Agents: ${agents.filter(a => a.status === 'active').length}`)
-        addEntry('output', `  Working Agents: ${agents.filter(a => a.status === 'working').length}`)
-        addEntry('output', `  Total Agents: ${agents.length}`)
-        const coreAgents = agents.filter(a => ['oracle', 'dispatcher', 'controller'].includes(a.type))
-        addEntry('output', `  Core Trinity: ${coreAgents.length}/3 ${coreAgents.length === 3 ? '✓' : '✗'}`)
-        break
-
-      default:
-        addEntry('error', `Unknown command: ${cmd}. Type "help" for available commands.`)
-        break
-    }
-
+    // Clear input
     setCurrentCommand('')
-    onExecuteCommand(command)
+    
+    // Process command
+    const parts = cmd.trim().split(' ')
+    const command = parts[0].toLowerCase()
+    const args = parts.slice(1)
+    
+    try {
+      switch (command) {
+        case 'help':
+          addEntry('output', 'Available commands:')
+          addEntry('output', '• list - Show all agents')
+          addEntry('output', '• acquire <agent> <skill> <value> - Add new skill to agent')
+          addEntry('output', '• evolve <agent> [factor] - Enhance agent skills')
+          addEntry('output', '• emulate <agent> <module> - Start emulate phase')
+          addEntry('output', '• condense <agent> <utility> - Start condense phase')
+          addEntry('output', '• repurpose <agent> <tool> - Start repurpose phase')
+          addEntry('output', '• redeploy <agent> <tool> - Start redeploy phase')
+          addEntry('output', '• clear - Clear terminal history')
+          break
+          
+        case 'list':
+          addEntry('output', 'Active Agents:')
+          agents.filter(a => a.status !== 'offline').forEach(agent => {
+            addEntry('output', `• ${agent.agent_name} [${agent.type}] - ${agent.status}`)
+          })
+          break
+          
+        case 'acquire':
+          if (args.length < 3) {
+            addEntry('error', 'Usage: acquire <agent> <skill> <value>')
+            break
+          }
+          const agentName = args[0]
+          const skillName = args[1]
+          const skillValue = parseFloat(args[2])
+          
+          const agent = agents.find(a => a.agent_name === agentName)
+          if (!agent) {
+            addEntry('error', `Agent "${agentName}" not found`)
+            break
+          }
+          
+          addEntry('output', `Initiating skill acquisition for ${agent.agent_name}...`)
+          addEntry('output', `Legion Protocol: CONDENSE → REPURPOSE`)
+          await onAcquireSkill(agent.id, skillName, skillValue)
+          addEntry('output', `✅ ${agent.agent_name} acquired ${skillName} = ${(skillValue * 100).toFixed(0)}%`)
+          addEntry('system', `Skill acquisition logged in neural core`)
+          break
+          
+        case 'evolve':
+          if (args.length < 1) {
+            addEntry('error', 'Usage: evolve <agent> [factor]')
+            break
+          }
+          const evolveAgent = agents.find(a => a.agent_name === args[0])
+          if (!evolveAgent) {
+            addEntry('error', `Agent "${args[0]}" not found`)
+            break
+          }
+          
+          const factor = args[1] ? parseFloat(args[1]) : 0.1
+          addEntry('output', `Initiating skill evolution for ${evolveAgent.agent_name}...`)
+          addEntry('output', `Legion Protocol: EMULATE → CONDENSE`)
+          await onEvolveSkills(evolveAgent.id, factor)
+          addEntry('output', `✅ ${evolveAgent.agent_name} skills evolved by ${(factor * 100).toFixed(0)}%`)
+          addEntry('system', `Skill evolution logged in neural core`)
+          break
+          
+        case 'clear':
+          setOutput([])
+          break
+          
+        default:
+          addEntry('error', `Command not found: ${command}`)
+          addEntry('output', 'Type "help" for available commands')
+      }
+    } catch (error) {
+      addEntry('error', `Command execution failed: ${(error as Error).message}`)
+    }
+    
+    // Always call the general execute command
+    onExecuteCommand(cmd)
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (currentCommand.trim()) {
       executeCommand(currentCommand)
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault()
-      if (commandHistory.length > 0) {
-        const newIndex = historyIndex === -1 ? commandHistory.length - 1 : Math.max(0, historyIndex - 1)
-        setHistoryIndex(newIndex)
-        setCurrentCommand(commandHistory[newIndex])
-      }
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault()
-      if (historyIndex !== -1) {
-        const newIndex = historyIndex + 1
-        if (newIndex >= commandHistory.length) {
-          setHistoryIndex(-1)
-          setCurrentCommand('')
-        } else {
-          setHistoryIndex(newIndex)
-          setCurrentCommand(commandHistory[newIndex])
-        }
-      }
     }
   }
 
-  const getEntryColor = (type: TerminalEntry['type']) => {
+  const getEntryColor = (type: string) => {
     switch (type) {
-      case 'command': return 'text-neon-pink'
-      case 'output': return 'text-steel-200'
-      case 'error': return 'text-red-400'
+      case 'input': return 'text-neon-pink'
+      case 'output': return 'text-steel-100'
       case 'system': return 'text-neon-blue'
+      case 'error': return 'text-red-400'
       default: return 'text-steel-300'
     }
   }
 
-  const getEntryPrefix = (type: TerminalEntry['type']) => {
-    switch (type) {
-      case 'command': return '$ '
-      case 'output': return '  '
-      case 'error': return '! '
-      case 'system': return '# '
-      default: return '  '
-    }
-  }
-
   return (
-    <div className="glass-panel p-6">
-      <div className="flex items-center space-x-4 mb-6">
-        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-green-500 to-neon-blue p-0.5">
-          <div className="w-full h-full rounded-full bg-steel-900 flex items-center justify-center">
-            <Terminal className="w-6 h-6 text-green-400" />
-          </div>
-        </div>
-        <div>
-          <h2 className="text-2xl font-display font-bold text-steel-100">
-            Command Terminal
-          </h2>
-          <p className="text-steel-400">
-            Direct interface to the Legion Operating System
-          </p>
-        </div>
-        <div className="flex-1"></div>
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => setHistory([])}
-            className="p-2 text-steel-400 hover:text-steel-200 hover:bg-steel-800/50 rounded"
-            title="Clear terminal"
+    <div className="glass-panel p-6 h-full flex flex-col">
+      <h2 className="text-xl font-semibold flex items-center mb-4">
+        <span className="mr-2">💻</span>
+        Command Terminal
+      </h2>
+      
+      <div 
+        ref={terminalRef}
+        className="flex-grow bg-steel-950/50 rounded-lg p-4 mb-4 font-mono text-sm overflow-y-auto terminal-scrollbar"
+      >
+        {output.map((entry, index) => (
+          <div 
+            key={index} 
+            className={`mb-2 ${getEntryColor(entry.type)}`}
           >
-            <History className="w-4 h-4" />
-          </button>
-        </div>
+            {entry.content}
+          </div>
+        ))}
       </div>
-
-      <div className="command-terminal">
-        {/* Terminal Output */}
+      
+      <form onSubmit={handleSubmit} className="flex">
+        <span className="flex items-center px-3 bg-steel-800 rounded-l-lg border-y border-l border-steel-700 text-neon-pink">
+          {'>'}
+        </span>
+        <input
+          type="text"
+          value={currentCommand}
+          onChange={(e) => setCurrentCommand(e.target.value)}
+          className="flex-grow bg-steel-800 border-y border-steel-700 px-3 py-2 focus:outline-none"
+          placeholder="Enter command..."
+          autoFocus
+        />
+        <button 
+          type="submit"
+          className="bg-neon-pink text-steel-900 px-4 py-2 rounded-r-lg font-medium hover:bg-neon-pink/90 transition-colors"
+        >
+          Execute
+        </button>
+      </form>
+    </div>
+  )
+}
         <div 
           ref={terminalRef}
           className="h-96 overflow-y-auto mb-4 space-y-1"

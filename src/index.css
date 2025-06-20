@@ -1,5 +1,99 @@
-/* Minimal reset */
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
-  margin: 0;
-  font-family: system-ui, sans-serif;
+  @apply bg-gradient-to-br from-steel-950 via-steel-900 to-steel-800 text-steel-100 font-display;
+}
+
+/* Glow effects */
+.glow-pink {
+  box-shadow: 0 0 10px theme('colors.neon-pink'), 0 0 20px theme('colors.neon-pink');
+}
+
+.glow-blue {
+  box-shadow: 0 0 10px theme('colors.neon-blue'), 0 0 20px theme('colors.neon-blue');
+}
+
+/* Terminal scrollbar */
+.terminal-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.terminal-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-steel-700 rounded-full;
+}
+
+/* Skill bars */
+.skill-bar {
+  @apply h-2 bg-steel-700 rounded-full overflow-hidden;
+}
+
+.skill-progress {
+  @apply h-full bg-gradient-to-r from-neon-pink to-neon-blue;
+}
+
+/* Panel styling */
+.glass-panel {
+  @apply bg-steel-900/70 backdrop-blur-md border border-steel-700/50 rounded-xl;
+}
+
+/* Status indicators */
+.status-indicator {
+  @apply w-3 h-3 rounded-full;
+}
+
+.status-indicator.online {
+  @apply bg-green-400 animate-signal-pulse;
+}
+
+.status-indicator.busy {
+  @apply bg-neon-blue animate-signal-pulse;
+}
+
+.status-indicator.error {
+  @apply bg-red-400 animate-signal-pulse;
+}
+
+.status-indicator.offline {
+  @apply bg-steel-600;
+}
+
+/* Agent node styling */
+.agent-node {
+  @apply relative p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 hover:scale-105;
+}
+
+.agent-node.active {
+  @apply shadow-lg;
+}
+
+.agent-node.working {
+  @apply shadow-lg;
+}
+
+.agent-node.idle {
+  @apply opacity-80;
+}
+
+.agent-node.error {
+  @apply border-red-500 bg-red-500/10;
+}
+
+.agent-node.offline {
+  @apply opacity-50 border-steel-600 bg-steel-600/10;
+}
+
+/* Command terminal styling */
+.command-terminal {
+  @apply bg-steel-950/80 rounded-lg border border-steel-700;
+}
+
+/* Background grid pattern */
+.bg-grid-pattern {
+  background-image: 
+    linear-gradient(rgba(100, 116, 139, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(100, 116, 139, 0.1) 1px, transparent 1px);
 }
