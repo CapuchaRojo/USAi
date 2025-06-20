@@ -15,6 +15,13 @@ export class SonnetEmulator extends Agent {
     super(supabase, addLog, 'SonNet-Emulator-01')
   }
 
+  protected applyTwinState(data: any): void {
+    // Apply digital twin synchronization for emulation phase
+    if (data.emulationTargets) {
+      this.addLog('system', `🔄 Twin sync: Updated emulation targets`)
+    }
+  }
+
   async execute(projectFiles: string[]): Promise<ProjectAnalysis> {
     return this.analyzeProjectStructure(projectFiles)
   }

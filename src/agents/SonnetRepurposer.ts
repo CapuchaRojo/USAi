@@ -15,6 +15,13 @@ export class SonnetRepurposer extends Agent {
     super(supabase, addLog, 'SonNet-Repurposer-01')
   }
 
+  protected applyTwinState(data: any): void {
+    // Apply digital twin synchronization for repurposing phase
+    if (data.repurposingTemplates) {
+      this.addLog('system', `🔄 Twin sync: Updated repurposing templates`)
+    }
+  }
+
   async execute(capabilities: CondensedCapabilities): Promise<NetworkAgent[]> {
     return this.createNetworkAgents(capabilities)
   }

@@ -13,6 +13,13 @@ export class SonnetCondenser extends Agent {
     super(supabase, addLog, 'SonNet-Condenser-01')
   }
 
+  protected applyTwinState(data: any): void {
+    // Apply digital twin synchronization for condensation phase
+    if (data.condensationRules) {
+      this.addLog('system', `🔄 Twin sync: Updated condensation parameters`)
+    }
+  }
+
   async execute(analysis: ProjectAnalysis): Promise<CondensedCapabilities> {
     return this.condenseCapabilities(analysis)
   }

@@ -14,6 +14,13 @@ export class SonnetDeployer extends Agent {
     super(supabase, addLog, 'SonNet-Deployer-01')
   }
 
+  protected applyTwinState(data: any): void {
+    // Apply digital twin synchronization for deployment phase
+    if (data.deploymentTargets) {
+      this.addLog('system', `🔄 Twin sync: Updated deployment targets`)
+    }
+  }
+
   async execute(agents: NetworkAgent[]): Promise<DeploymentResult[]> {
     return this.deployAgents(agents)
   }
@@ -31,6 +38,12 @@ export class SonnetDeployer extends Agent {
         
         // Simulate deployment delay
         await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000))
+        
+        // Synchronize digital twin before deployment
+        this.synchronizeTwin({
+          deploymentTargets: [agent.deploymentTarget],
+          agentCapabilities: agent.skills
+        })
         
         // Create agent in database
         const { data, error } = await this.supabase.rpc('create_agent', {
