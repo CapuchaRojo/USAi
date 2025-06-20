@@ -196,6 +196,19 @@ function App() {
       
       if (!session?.user?.id) {
         throw new Error('User authentication required to deploy agents');
+    // Allow nil UUID for preview mode
+    const userId = session.user.id
+    const isPreviewUser = userId === '00000000-0000-0000-0000-000000000000'
+    
+    // Only validate UUID format for non-preview users
+    if (!isPreviewUser) {
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+      if (!uuidRegex.test(userId)) {
+        console.error(`Invalid user ID format for non-preview user: ${userId}`)
+        return
+      }
+    }
+
       }
       
       console.log('Creating core agents for authenticated user:', session.user.email);
@@ -273,6 +286,19 @@ function App() {
     if (!session?.user?.id) {
       console.error('Cannot create agent - user not authenticated')
       return
+    }
+
+    // Allow nil UUID for preview mode
+    const userId = session.user.id
+    const isPreviewUser = userId === '00000000-0000-0000-0000-000000000000'
+    
+    // Only validate UUID format for non-preview users
+    if (!isPreviewUser) {
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+      if (!uuidRegex.test(userId)) {
+        console.error(`Invalid user ID format: ${userId}`)
+        throw new Error(`Invalid user ID format: ${userId}`)
+      }
     }
 
     // Validate UUID format with preview mode exception
