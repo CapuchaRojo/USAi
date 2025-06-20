@@ -6,6 +6,10 @@ interface CommandTerminalProps {
   agents: Agent[]
   onAcquireSkill: (agentId: string, skill: string, value: number) => Promise<any>
   onEvolveSkills: (agentId: string, evolutionFactor?: number) => Promise<any>
+  onSimulateEmulate: (id: string, module: string, desc: string) => Promise<void>
+  onSimulateCondense: (id: string, util: string, desc: string) => Promise<void>
+  onSimulateRepurpose: (id: string, tool: string, desc: string) => Promise<void>
+  onSimulateRedeploy: (id: string, tool: string, desc: string) => Promise<void>
   onExecuteCommand: (command: string) => void
 }
 
@@ -21,6 +25,10 @@ export const CommandTerminal: React.FC<CommandTerminalProps> = ({
   agents, 
   onAcquireSkill,
   onEvolveSkills,
+  onSimulateEmulate,
+  onSimulateCondense,
+  onSimulateRepurpose,
+  onSimulateRedeploy,
   onExecuteCommand 
 }) => {
   const [currentCommand, setCurrentCommand] = useState('')
@@ -76,6 +84,10 @@ export const CommandTerminal: React.FC<CommandTerminalProps> = ({
         addEntry('output', '  spawn <name> <type> - Create new agent')
         addEntry('output', '  acquire <agent> <skill> <value> - Agent acquires new skill')
         addEntry('output', '  evolve <agent> [factor] - Evolve agent skills')
+        addEntry('output', '  emulate <agent> <module> [desc] - Emulate system module')
+        addEntry('output', '  condense <agent> <utility> [desc] - Condense core utilities')
+        addEntry('output', '  repurpose <agent> <tool> [desc] - Repurpose as new tool')
+        addEntry('output', '  redeploy <agent> <tool> [desc] - Redeploy optimized tool')
         addEntry('output', '  mission <name> - Create new mission')
         addEntry('output', '  clear - Clear terminal')
         addEntry('output', '  legion - Show Legion Protocol status')
@@ -196,6 +208,110 @@ export const CommandTerminal: React.FC<CommandTerminalProps> = ({
               addEntry('system', `Evolution cycle completed - agent redeployed`)
             } catch (error) {
               addEntry('error', `Failed to evolve skills: ${error.message}`)
+            }
+          } else {
+            addEntry('error', `Agent "${agentName}" not found`)
+          }
+        }
+        break
+
+      case 'emulate':
+        if (args.length < 2) {
+          addEntry('error', 'Usage: emulate <agent_name> <module_name> [description]')
+          addEntry('output', 'Example: emulate Developer-01 auth_system "User authentication module"')
+        } else {
+          const agentName = args[0]
+          const moduleName = args[1]
+          const description = args.slice(2).join(' ') || `Emulating ${moduleName} module`
+          
+          const agent = agents.find(a => a.agent_name.toLowerCase().includes(agentName.toLowerCase()))
+          if (agent) {
+            try {
+              addEntry('output', `Initiating emulation phase for ${agent.agent_name}...`)
+              addEntry('output', `Legion Protocol: EMULATE → Analyzing ${moduleName}`)
+              await onSimulateEmulate(agent.id, moduleName, description)
+              addEntry('output', `✅ ${agent.agent_name} successfully emulated "${moduleName}"`)
+              addEntry('system', `Module patterns captured and stored`)
+            } catch (error) {
+              addEntry('error', `Failed to emulate module: ${error.message}`)
+            }
+          } else {
+            addEntry('error', `Agent "${agentName}" not found`)
+          }
+        }
+        break
+
+      case 'condense':
+        if (args.length < 2) {
+          addEntry('error', 'Usage: condense <agent_name> <utility_name> [description]')
+          addEntry('output', 'Example: condense Developer-01 auth_utility "Shared authentication utility"')
+        } else {
+          const agentName = args[0]
+          const utilityName = args[1]
+          const description = args.slice(2).join(' ') || `Condensing ${utilityName} utility`
+          
+          const agent = agents.find(a => a.agent_name.toLowerCase().includes(agentName.toLowerCase()))
+          if (agent) {
+            try {
+              addEntry('output', `Initiating condensation phase for ${agent.agent_name}...`)
+              addEntry('output', `Legion Protocol: CONDENSE → Extracting ${utilityName}`)
+              await onSimulateCondense(agent.id, utilityName, description)
+              addEntry('output', `✅ ${agent.agent_name} condensed core utility "${utilityName}"`)
+              addEntry('system', `Redundancy eliminated, efficiency improved`)
+            } catch (error) {
+              addEntry('error', `Failed to condense utility: ${error.message}`)
+            }
+          } else {
+            addEntry('error', `Agent "${agentName}" not found`)
+          }
+        }
+        break
+
+      case 'repurpose':
+        if (args.length < 2) {
+          addEntry('error', 'Usage: repurpose <agent_name> <tool_name> [description]')
+          addEntry('output', 'Example: repurpose Developer-01 signup_service "User signup as a service"')
+        } else {
+          const agentName = args[0]
+          const toolName = args[1]
+          const description = args.slice(2).join(' ') || `Repurposing ${toolName} tool`
+          
+          const agent = agents.find(a => a.agent_name.toLowerCase().includes(agentName.toLowerCase()))
+          if (agent) {
+            try {
+              addEntry('output', `Initiating repurpose phase for ${agent.agent_name}...`)
+              addEntry('output', `Legion Protocol: REPURPOSE → Creating ${toolName}`)
+              await onSimulateRepurpose(agent.id, toolName, description)
+              addEntry('output', `✅ ${agent.agent_name} repurposed utility as "${toolName}"`)
+              addEntry('system', `New tool registered in command registry`)
+            } catch (error) {
+              addEntry('error', `Failed to repurpose tool: ${error.message}`)
+            }
+          } else {
+            addEntry('error', `Agent "${agentName}" not found`)
+          }
+        }
+        break
+
+      case 'redeploy':
+        if (args.length < 2) {
+          addEntry('error', 'Usage: redeploy <agent_name> <tool_name> [description]')
+          addEntry('output', 'Example: redeploy Developer-01 signup_service "Deploy optimized signup service"')
+        } else {
+          const agentName = args[0]
+          const toolName = args[1]
+          const description = args.slice(2).join(' ') || `Redeploying ${toolName} tool`
+          
+          const agent = agents.find(a => a.agent_name.toLowerCase().includes(agentName.toLowerCase()))
+          if (agent) {
+            try {
+              addEntry('output', `Initiating redeploy phase for ${agent.agent_name}...`)
+              addEntry('output', `Legion Protocol: REDEPLOY → Activating ${toolName}`)
+              await onSimulateRedeploy(agent.id, toolName, description)
+              addEntry('output', `✅ ${agent.agent_name} successfully redeployed "${toolName}"`)
+              addEntry('system', `Tool active and ready for production use`)
+            } catch (error) {
+              addEntry('error', `Failed to redeploy tool: ${error.message}`)
             }
           } else {
             addEntry('error', `Agent "${agentName}" not found`)
@@ -368,11 +484,22 @@ export const CommandTerminal: React.FC<CommandTerminalProps> = ({
 
         {/* Command Suggestions */}
         <div className="mt-4 flex flex-wrap gap-2">
-          {['help', 'list', 'acquire Oracle-01 analysis 0.98', 'evolve Oracle-01', 'legion', 'clear'].map(cmd => (
+          {[
+            'help', 
+            'list', 
+            'acquire Oracle-01 analysis 0.98', 
+            'evolve Oracle-01',
+            'emulate Developer-01 auth_system',
+            'condense Developer-01 auth_utility',
+            'repurpose Developer-01 signup_service',
+            'redeploy Developer-01 signup_service',
+            'legion', 
+            'clear'
+          ].map(cmd => (
             <button
               key={cmd}
               onClick={() => setCurrentCommand(cmd)}
-              className="px-2 py-1 text-xs bg-steel-800/50 text-steel-400 border border-steel-700 rounded hover:border-steel-600 hover:text-steel-300 whitespace-nowrap"
+              className="px-2 py-1 text-xs bg-steel-800/50 text-steel-400 border border-steel-700 rounded hover:border-steel-600 hover:text-steel-300 whitespace-nowrap max-w-48 truncate"
             >
               {cmd}
             </button>

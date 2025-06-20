@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Plus, Zap, Brain, Eye, Settings, Shield, Cpu, Network } from 'lucide-react'
+import { Plus, Zap, Brain, Eye, Settings, Shield, Cpu, Network, Code, Palette, Megaphone } from 'lucide-react'
 import { Agent } from '../App'
 
 interface SwarmMapProps {
@@ -13,6 +13,9 @@ const agentTypeIcons = {
   oracle: Eye,
   dispatcher: Network,
   controller: Settings,
+  developer: Code,
+  designer: Palette,
+  marketing: Megaphone,
   monitor: Shield,
   router: Cpu,
   coordinator: Brain,
@@ -24,6 +27,9 @@ const agentTypeColors = {
   oracle: 'border-purple-500 bg-purple-500/10 text-purple-300',
   dispatcher: 'border-neon-blue bg-neon-blue/10 text-neon-blue',
   controller: 'border-neon-pink bg-neon-pink/10 text-neon-pink',
+  developer: 'border-green-500 bg-green-500/10 text-green-300',
+  designer: 'border-orange-500 bg-orange-500/10 text-orange-300',
+  marketing: 'border-red-500 bg-red-500/10 text-red-300',
   monitor: 'border-green-500 bg-green-500/10 text-green-300',
   router: 'border-yellow-500 bg-yellow-500/10 text-yellow-300',
   coordinator: 'border-indigo-500 bg-indigo-500/10 text-indigo-300',

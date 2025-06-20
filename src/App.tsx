@@ -275,6 +275,91 @@ function App() {
     }
   }
 
+  // Legion Protocol Simulation Functions
+  const simulateEmulate = async (id: string, moduleName: string, description: string) => {
+    if (!isConnected || !session) {
+      console.error('Cannot simulate emulate phase - user not authenticated')
+      return
+    }
+
+    try {
+      const { error } = await supabase.rpc('simulate_emulate_phase', {
+        p_agent_id: id,
+        p_module_name: moduleName,
+        p_description: description
+      })
+
+      if (error) throw error
+      await loadAgents() // Refresh UI with updated agent state
+    } catch (error) {
+      console.error('Failed to simulate emulate phase:', error)
+      throw error
+    }
+  }
+
+  const simulateCondense = async (id: string, utilityName: string, description: string) => {
+    if (!isConnected || !session) {
+      console.error('Cannot simulate condense phase - user not authenticated')
+      return
+    }
+
+    try {
+      const { error } = await supabase.rpc('simulate_condense_phase', {
+        p_agent_id: id,
+        p_utility_name: utilityName,
+        p_description: description
+      })
+
+      if (error) throw error
+      await loadAgents() // Refresh UI with updated agent state
+    } catch (error) {
+      console.error('Failed to simulate condense phase:', error)
+      throw error
+    }
+  }
+
+  const simulateRepurpose = async (id: string, toolName: string, description: string) => {
+    if (!isConnected || !session) {
+      console.error('Cannot simulate repurpose phase - user not authenticated')
+      return
+    }
+
+    try {
+      const { error } = await supabase.rpc('simulate_repurpose_phase', {
+        p_agent_id: id,
+        p_tool_name: toolName,
+        p_description: description
+      })
+
+      if (error) throw error
+      await loadAgents() // Refresh UI with updated agent state
+    } catch (error) {
+      console.error('Failed to simulate repurpose phase:', error)
+      throw error
+    }
+  }
+
+  const simulateRedeploy = async (id: string, toolName: string, description: string) => {
+    if (!isConnected || !session) {
+      console.error('Cannot simulate redeploy phase - user not authenticated')
+      return
+    }
+
+    try {
+      const { error } = await supabase.rpc('simulate_redeploy_phase', {
+        p_agent_id: id,
+        p_tool_name: toolName,
+        p_description: description
+      })
+
+      if (error) throw error
+      await loadAgents() // Refresh UI with updated agent state
+    } catch (error) {
+      console.error('Failed to simulate redeploy phase:', error)
+      throw error
+    }
+  }
+
   // Show loading state while checking authentication
   if (authLoading) {
     return (
@@ -365,6 +450,10 @@ function App() {
                 agents={agents}
                 onAcquireSkill={acquireAgentSkill}
                 onEvolveSkills={evolveAgentSkills}
+                onSimulateEmulate={simulateEmulate}
+                onSimulateCondense={simulateCondense}
+                onSimulateRepurpose={simulateRepurpose}
+                onSimulateRedeploy={simulateRedeploy}
                 onExecuteCommand={(command) => console.log('Execute:', command)}
               />
             )}
