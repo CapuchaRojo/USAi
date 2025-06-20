@@ -6,6 +6,8 @@ interface CommandTerminalProps {
   terminalOutput: {type: string; content: string}[]
   addTerminalEntry: (type: string, content: string) => void
   runSonnetProtocol: () => Promise<void>
+  runUsheringAgent: () => Promise<void>
+  runOptimizerAgent: () => Promise<void>
   onAcquireSkill: (agentId: string, skill: string, value: number) => Promise<any>
   onEvolveSkills: (agentId: string, evolutionFactor?: number) => Promise<any>
   onSimulateEmulate: (id: string, module: string, desc: string) => Promise<void>
@@ -28,6 +30,8 @@ export const CommandTerminal: React.FC<CommandTerminalProps> = ({
   terminalOutput,
   addTerminalEntry,
   runSonnetProtocol,
+  runUsheringAgent,
+  runOptimizerAgent,
   onAcquireSkill,
   onEvolveSkills,
   onSimulateEmulate,
@@ -73,6 +77,8 @@ export const CommandTerminal: React.FC<CommandTerminalProps> = ({
           addTerminalEntry('output', 'Available commands:')
           addTerminalEntry('output', '• list - Show all agents')
           addTerminalEntry('output', '• deploy-sonnet - Integrate SonNetAI project')
+          addTerminalEntry('output', '• usher-agents - Register agent capabilities as commands')
+          addTerminalEntry('output', '• optimize-agents - Analyze and optimize agent performance')
           addTerminalEntry('output', '• acquire <agent> <skill> <value> - Add new skill to agent')
           addTerminalEntry('output', '• evolve <agent> [factor] - Enhance agent skills')
           addTerminalEntry('output', '• emulate <agent> <module> - Start emulate phase')
@@ -84,6 +90,16 @@ export const CommandTerminal: React.FC<CommandTerminalProps> = ({
           
         case 'deploy-sonnet':
           await runSonnetProtocol()
+          break
+          
+        case 'usher-agents':
+          addTerminalEntry('output', 'Initiating agent capability registration...')
+          await runUsheringAgent()
+          break
+          
+        case 'optimize-agents':
+          addTerminalEntry('output', 'Initiating swarm optimization protocol...')
+          await runOptimizerAgent()
           break
           
         case 'list':
@@ -214,6 +230,8 @@ export const CommandTerminal: React.FC<CommandTerminalProps> = ({
           'help',
           'list', 
           'deploy-sonnet',
+          'usher-agents',
+          'optimize-agents',
           'acquire Oracle-01 analysis 0.98',
           'evolve Oracle-01',
           'clear'

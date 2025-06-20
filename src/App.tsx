@@ -12,6 +12,8 @@ import { SonnetEmulator } from './agents/SonnetEmulator'
 import { SonnetCondenser } from './agents/SonnetCondenser'
 import { SonnetRepurposer } from './agents/SonnetRepurposer'
 import { SonnetDeployer } from './agents/SonnetDeployer'
+import { UsheringAgent } from './agents/UsheringAgent'
+import { OptimizerAgent } from './agents/OptimizerAgent'
 import { SONNET_PROJECT_FILES } from './types/SonnetTypes'
 
 const createCoreAgents = async () => {
@@ -58,6 +60,8 @@ function App() {
   const [isConnected, setIsConnected] = useState(false)
   const [authLoading, setAuthLoading] = useState(true)
   const [terminalOutput, setTerminalOutput] = useState<{type: string, content: string}[]>([])
+  const [usheringAgent, setUsheringAgent] = useState<UsheringAgent | null>(null)
+  const [optimizerAgent, setOptimizerAgent] = useState<OptimizerAgent | null>(null)
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -120,6 +124,7 @@ function App() {
     // Initialize the Legion only when authenticated
     if (isConnected && !authLoading) {
       initializeLegion()
+      initializeNewAgents()
     }
   }, [isConnected, authLoading])
 
@@ -451,6 +456,70 @@ function App() {
     }
   }
 
+  const initializeNewAgents = () => {
+    if (!isConnected || !session) {
+      console.log('Cannot initialize new agents - user not authenticated')
+      return
+    }
+
+    try {
+      // Initialize Ushering Agent
+      const ushering = new UsheringAgent(supabase, addTerminalEntry)
+      setUsheringAgent(ushering)
+      
+      // Initialize Optimizer Agent
+      const optimizer = new OptimizerAgent(supabase, addTerminalEntry)
+      setOptimizerAgent(optimizer)
+      
+      addTerminalEntry('system', '🚪 Ushering Agent initialized - Ready to register agent capabilities')
+      addTerminalEntry('system', '⚡ Optimizer Agent initialized - Ready to enhance swarm performance')
+      
+    } catch (error) {
+      addTerminalEntry('error', `Failed to initialize new agents: ${error.message}`)
+      console.error('Failed to initialize new agents:', error)
+    }
+  }
+
+  const runUsheringAgent = async () => {
+    if (!usheringAgent) {
+      addTerminalEntry('error', 'Ushering Agent not initialized')
+      return
+    }
+
+    try {
+      addTerminalEntry('system', '🚪 Executing Ushering Agent...')
+      const result = await usheringAgent.execute()
+      
+      addTerminalEntry('success', `Ushering complete: ${result.commandsRegistered} new commands registered`)
+      if (result.newCapabilities.length > 0) {
+        addTerminalEntry('output', `New capabilities: ${result.newCapabilities.join(', ')}`)
+      }
+      
+    } catch (error) {
+      addTerminalEntry('error', `Ushering Agent failed: ${error.message}`)
+    }
+  }
+
+  const runOptimizerAgent = async () => {
+    if (!optimizerAgent) {
+      addTerminalEntry('error', 'Optimizer Agent not initialized')
+      return
+    }
+
+    try {
+      addTerminalEntry('system', '⚡ Executing Optimizer Agent...')
+      const result = await optimizerAgent.execute()
+      
+      addTerminalEntry('success', `Optimization complete: ${result.optimizationsPerformed} agents optimized`)
+      if (result.systemRecommendations.length > 0) {
+        addTerminalEntry('output', `Recommendations: ${result.systemRecommendations.length} generated`)
+      }
+      
+    } catch (error) {
+      addTerminalEntry('error', `Optimizer Agent failed: ${error.message}`)
+    }
+  }
+
   const addTerminalEntry = (type: string, content: string) => {
     setTerminalOutput(prev => [...prev, {type, content}])
   }
@@ -594,6 +663,8 @@ function App() {
                 terminalOutput={terminalOutput}
                 addTerminalEntry={addTerminalEntry}
                 runSonnetProtocol={runSonnetProtocol}
+                runUsheringAgent={runUsheringAgent}
+                runOptimizerAgent={runOptimizerAgent}
                 onAcquireSkill={acquireAgentSkill}
                 onEvolveSkills={evolveAgentSkills}
                 onSimulateEmulate={simulateEmulate}
