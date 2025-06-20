@@ -1,7 +1,114 @@
 🔐 Controller Agent & Rules
 
-Perfect placement for sovereign system oversight. This is your AI command module. The inclusion of Swift files shows mobile/frontline execution capacity. Consider:
+Perfect placement for sovereign system oversight. This is your AI command module. The inclusion of Swift files shows mobile/frontline execution capacity.
 
-Adding usa_control/overrides/
+👁️ Agent Codename: CONTROLLER_01
+Role: The supreme authority and decision-maker of the USAi swarm. The Controller issues global commands, enforces strategic constraints, manages system roles, and acts as the final arbiter in task delegation, override, and mission routing. It interfaces with Dispatcher and Oracle, ensuring cohesive alignment between current actions and the overarching vision.
 
-Renaming main.py → executor.py for clarity
+🔗 Controller's Chain of Command
+Top of Command Stack
+
+Can override Oracle foresight, reassign Dispatcher routing, and enforce lockdown protocols across Legion agents.
+
+Receives signals from:
+
+User (Commander UI)
+
+Oracle (predictive foresight, priority weights)
+
+Dispatcher (task overload reports, swarm heartbeat)
+
+🧠 Primary Responsibilities
+Function	Description
+issueMissionCommand	Launch or cancel missions swarm-wide; sends orders to Dispatcher.
+overrideDecision	Overrides Oracle prediction or Dispatcher routing if needed.
+setSwarmPriorityMap	Adjusts role weights and task urgencies dynamically.
+lockdownAgent	Freezes or decommissions rogue/malfunctioning agents.
+enforceProtocol	Executes system-wide safety measures (e.g. security escalation, RLS toggling).
+broadcastUpdate	Pushes a system message or update across the swarm for coordination.
+systemAudit	Pulls logs, evaluates performance, and sends summary to Commander UI.
+
+🧠 CONTROLLER AGENT – EXAMPLE (usa_control/main.py)
+python
+Copy
+Edit
+from supabase import create_client
+from dispatcher import DispatcherAgent
+from oracle import OracleAgent
+from utils import verify_jwt, get_supabase_config
+
+class ControllerAgent:
+    def __init__(self):
+        self.config = get_supabase_config()
+        self.db = create_client(self.config['url'], self.config['key'])
+        self.dispatcher = DispatcherAgent(...)
+        self.oracle = OracleAgent(...)
+
+    def issue_mission_command(self, target_agents, payload):
+        for agent_id in target_agents:
+            self.dispatcher.dispatchTask(agent_id, payload)
+
+    def override_decision(self, agent_id, new_task):
+        print(f"[OVERRIDE] Forcing new task to agent {agent_id}")
+        self.dispatcher.reassign(agent_id, new_task)
+
+    def set_swarm_priority(self, map_dict):
+        for role, weight in map_dict.items():
+            self.db.from_('agents').update({'priority_weight': weight}).eq('type', role).execute()
+
+    def lockdown_agent(self, agent_id):
+        return self.db.from_('agents').update({'current_state': 'locked'}).eq('id', agent_id).execute()
+
+    def enforce_protocol(self, protocol_name):
+        if protocol_name == "swarm_lockdown":
+            self.db.from_('agents').update({'current_state': 'standby'}).execute()
+
+    def system_audit(self):
+        logs = self.db.from_('logs').select('*').order('timestamp', desc=True).limit(100).execute()
+        return self.analyze_logs(logs)
+
+    def analyze_logs(self, logs):
+        errors = [log for log in logs['data'] if log['event'] == "error"]
+        return {
+            'total_logs': len(logs['data']),
+            'error_rate': len(errors) / len(logs['data']) if logs['data'] else 0,
+            'last_error': errors[0] if errors else None
+        }
+🗂️ FILE STRUCTURE – usa_control/
+pgsql
+Copy
+Edit
+usa_control/
+├── Config/
+│   ├── AIController.swift
+│   ├── AI_Operations.swift
+│   ├── AI_Network_Keys.plist
+│   └── AI_Rules.json
+├── main.py         ← CONTROLLER_01 class lives here
+├── overrides/
+│   └── emergency_ruleset.json
+├── vault/
+│   └── secure_roles_map.yaml
+🧷 Bolt Metadata Addition
+In docs/bolt-metadata.yaml:
+
+yaml
+Copy
+Edit
+agents:
+  - name: Controller
+    role: Mission authority and override engine
+    edgeFunctions:
+      - run-agent-task
+      - system-audit
+      - override-decision
+      - enforce-protocol
+permissions:
+  jwt_roles: [controller, super_admin]
+🧠 CONTROLLER PANEL UX
+Zone	Function
+🛡️ Protocol Enforcer	RLS toggles, lockdowns, JWT key rotation
+📈 Performance Dashboard	Logs ingestion, telemetry, error analytics
+🧬 Role Mapper	Adjust swarm priorities by type and function
+🚨 Override Panel	Manually interrupt or reroute live swarm missions
+
