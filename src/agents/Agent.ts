@@ -47,3 +47,5 @@ export abstract class Agent {
 
   abstract execute(...args: any[]): Promise<any>
 }
+
+export { Agent }

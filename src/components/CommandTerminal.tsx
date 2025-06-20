@@ -3,6 +3,9 @@ import { Agent } from '../App'
 
 interface CommandTerminalProps {
   agents: Agent[]
+  terminalOutput: {type: string; content: string}[]
+  addTerminalEntry: (type: string, content: string) => void
+  runSonnetProtocol: () => Promise<void>
   onAcquireSkill: (agentId: string, skill: string, value: number) => Promise<any>
   onEvolveSkills: (agentId: string, evolutionFactor?: number) => Promise<any>
   onSimulateEmulate: (id: string, module: string, desc: string) => Promise<void>
@@ -31,15 +34,16 @@ export const CommandTerminal: React.FC<CommandTerminalProps> = ({
   onExecuteCommand 
 }) => {
   const [currentCommand, setCurrentCommand] = useState('')
-  const [output, setOutput] = useState<{ type: string; content: string }[]>([])
   const [historyIndex, setHistoryIndex] = useState(-1)
   const [commandHistory, setCommandHistory] = useState<string[]>([])
   const terminalRef = useRef<HTMLDivElement>(null)
 
   // Initial system message
   useEffect(() => {
-    addEntry('system', 'USAi Legion OS Terminal initialized')
-    addEntry('system', 'Type "help" for available commands')
+    if (terminalOutput.length === 0) {
+      addTerminalEntry('system', 'USAi Legion OS Terminal initialized')
+      addTerminalEntry('system', 'Type "help" for available commands')
+    }
   }, [])
 
   // Auto-scroll to bottom
@@ -47,14 +51,10 @@ export const CommandTerminal: React.FC<CommandTerminalProps> = ({
     if (terminalRef.current) {
       terminalRef.current.scrollTop = terminalRef.current.scrollHeight
     }
-  }, [output])
-
-  const addEntry = (type: string, content: string) => {
-    setOutput(prev => [...prev, { type, content }])
-  }
+  }, [terminalOutput])
 
   const executeCommand = async (cmd: string) => {
-    addEntry('input', `> ${cmd}`)
+    addTerminalEntry('input', `> ${cmd}`)
     
     // Clear input
     setCurrentCommand('')
@@ -67,27 +67,32 @@ export const CommandTerminal: React.FC<CommandTerminalProps> = ({
     try {
       switch (command) {
         case 'help':
-          addEntry('output', 'Available commands:')
-          addEntry('output', '• list - Show all agents')
-          addEntry('output', '• acquire <agent> <skill> <value> - Add new skill to agent')
-          addEntry('output', '• evolve <agent> [factor] - Enhance agent skills')
-          addEntry('output', '• emulate <agent> <module> - Start emulate phase')
-          addEntry('output', '• condense <agent> <utility> - Start condense phase')
-          addEntry('output', '• repurpose <agent> <tool> - Start repurpose phase')
-          addEntry('output', '• redeploy <agent> <tool> - Start redeploy phase')
-          addEntry('output', '• clear - Clear terminal history')
+          addTerminalEntry('output', 'Available commands:')
+          addTerminalEntry('output', '• list - Show all agents')
+          addTerminalEntry('output', '• deploy-sonnet - Integrate SonNetAI project')
+          addTerminalEntry('output', '• acquire <agent> <skill> <value> - Add new skill to agent')
+          addTerminalEntry('output', '• evolve <agent> [factor] - Enhance agent skills')
+          addTerminalEntry('output', '• emulate <agent> <module> - Start emulate phase')
+          addTerminalEntry('output', '• condense <agent> <utility> - Start condense phase')
+          addTerminalEntry('output', '• repurpose <agent> <tool> - Start repurpose phase')
+          addTerminalEntry('output', '• redeploy <agent> <tool> - Start redeploy phase')
+          addTerminalEntry('output', '• clear - Clear terminal history')
+          break
+          
+        case 'deploy-sonnet':
+          await runSonnetProtocol()
           break
           
         case 'list':
-          addEntry('output', 'Active Agents:')
+          addTerminalEntry('output', 'Active Agents:')
           agents.filter(a => a.status !== 'offline').forEach(agent => {
-            addEntry('output', `• ${agent.agent_name} [${agent.type}] - ${agent.status}`)
+            addTerminalEntry('output', `• ${agent.agent_name} [${agent.type}] - ${agent.status}`)
           })
           break
           
         case 'acquire':
           if (args.length < 3) {
-            addEntry('error', 'Usage: acquire <agent> <skill> <value>')
+            addTerminalEntry('error', 'Usage: acquire <agent> <skill> <value>')
             break
           }
           const agentName = args[0]
@@ -96,46 +101,46 @@ export const CommandTerminal: React.FC<CommandTerminalProps> = ({
           
           const agent = agents.find(a => a.agent_name === agentName)
           if (!agent) {
-            addEntry('error', `Agent "${agentName}" not found`)
+            addTerminalEntry('error', `Agent "${agentName}" not found`)
             break
           }
           
-          addEntry('output', `Initiating skill acquisition for ${agent.agent_name}...`)
-          addEntry('output', `Legion Protocol: CONDENSE → REPURPOSE`)
+          addTerminalEntry('output', `Initiating skill acquisition for ${agent.agent_name}...`)
+          addTerminalEntry('output', `Legion Protocol: CONDENSE → REPURPOSE`)
           await onAcquireSkill(agent.id, skillName, skillValue)
-          addEntry('output', `✅ ${agent.agent_name} acquired ${skillName} = ${(skillValue * 100).toFixed(0)}%`)
-          addEntry('system', `Skill acquisition logged in neural core`)
+          addTerminalEntry('output', `✅ ${agent.agent_name} acquired ${skillName} = ${(skillValue * 100).toFixed(0)}%`)
+          addTerminalEntry('system', `Skill acquisition logged in neural core`)
           break
           
         case 'evolve':
           if (args.length < 1) {
-            addEntry('error', 'Usage: evolve <agent> [factor]')
+            addTerminalEntry('error', 'Usage: evolve <agent> [factor]')
             break
           }
           const evolveAgent = agents.find(a => a.agent_name === args[0])
           if (!evolveAgent) {
-            addEntry('error', `Agent "${args[0]}" not found`)
+            addTerminalEntry('error', `Agent "${args[0]}" not found`)
             break
           }
           
           const factor = args[1] ? parseFloat(args[1]) : 0.1
-          addEntry('output', `Initiating skill evolution for ${evolveAgent.agent_name}...`)
-          addEntry('output', `Legion Protocol: EMULATE → CONDENSE`)
+          addTerminalEntry('output', `Initiating skill evolution for ${evolveAgent.agent_name}...`)
+          addTerminalEntry('output', `Legion Protocol: EMULATE → CONDENSE`)
           await onEvolveSkills(evolveAgent.id, factor)
-          addEntry('output', `✅ ${evolveAgent.agent_name} skills evolved by ${(factor * 100).toFixed(0)}%`)
-          addEntry('system', `Skill evolution logged in neural core`)
+          addTerminalEntry('output', `✅ ${evolveAgent.agent_name} skills evolved by ${(factor * 100).toFixed(0)}%`)
+          addTerminalEntry('system', `Skill evolution logged in neural core`)
           break
           
         case 'clear':
-          setOutput([])
+          setTerminalOutput([])
           break
           
         default:
-          addEntry('error', `Command not found: ${command}`)
-          addEntry('output', 'Type "help" for available commands')
+          addTerminalEntry('error', `Command not found: ${command}`)
+          addTerminalEntry('output', 'Type "help" for available commands')
       }
     } catch (error) {
-      addEntry('error', `Command execution failed: ${(error as Error).message}`)
+      addTerminalEntry('error', `Command execution failed: ${(error as Error).message}`)
     }
     
     // Always call the general execute command
@@ -170,7 +175,7 @@ export const CommandTerminal: React.FC<CommandTerminalProps> = ({
         ref={terminalRef}
         className="flex-grow bg-steel-950/50 rounded-lg p-4 mb-4 font-mono text-sm overflow-y-auto terminal-scrollbar"
       >
-        {output.map((entry, index) => (
+        {terminalOutput.map((entry, index) => (
           <div 
             key={index} 
             className={`mb-2 ${getEntryColor(entry.type)}`}
@@ -199,6 +204,26 @@ export const CommandTerminal: React.FC<CommandTerminalProps> = ({
           Execute
         </button>
       </form>
+      
+      {/* Quick Commands */}
+      <div className="mt-4 flex flex-wrap gap-2">
+        {[
+          'help',
+          'list', 
+          'deploy-sonnet',
+          'acquire Oracle-01 analysis 0.98',
+          'evolve Oracle-01',
+          'clear'
+        ].map(cmd => (
+          <button
+            key={cmd}
+            onClick={() => setCurrentCommand(cmd)}
+            className="px-2 py-1 text-xs bg-steel-800/50 text-steel-400 border border-steel-700 rounded hover:border-steel-600 hover:text-steel-300 whitespace-nowrap"
+          >
+            {cmd}
+          </button>
+        ))}
+      </div>
     </div>
   )
 }

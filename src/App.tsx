@@ -8,6 +8,11 @@ import { Oracle } from './components/Oracle'
 import { CommandTerminal } from './components/CommandTerminal'
 import { AgentStatus } from './components/AgentStatus'
 import { LegionProtocol } from './components/LegionProtocol'
+import { SonnetEmulator } from './agents/SonnetEmulator'
+import { SonnetCondenser } from './agents/SonnetCondenser'
+import { SonnetRepurposer } from './agents/SonnetRepurposer'
+import { SonnetDeployer } from './agents/SonnetDeployer'
+import { SONNET_PROJECT_FILES } from './types/SonnetTypes'
 
 const createCoreAgents = async () => {
   // Add this guard clause
@@ -52,6 +57,7 @@ function App() {
   const [session, setSession] = useState<Session | null>(null)
   const [isConnected, setIsConnected] = useState(false)
   const [authLoading, setAuthLoading] = useState(true)
+  const [terminalOutput, setTerminalOutput] = useState<{type: string, content: string}[]>([])
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -438,6 +444,58 @@ function App() {
     }
   }
 
+  const addTerminalEntry = (type: string, content: string) => {
+    setTerminalOutput(prev => [...prev, {type, content}])
+  }
+
+  const runSonnetProtocol = async () => {
+    addTerminalEntry('system', '🌐 Initializing SonNetAI integration protocol...')
+    addTerminalEntry('system', 'Legion Protocol: EMULATE → CONDENSE → REPURPOSE → REDEPLOY')
+    
+    try {
+      // Get project files for analysis
+      const projectFiles = SONNET_PROJECT_FILES.map(file => file.name)
+      addTerminalEntry('output', `📁 Analyzing ${projectFiles.length} SonNetAI project files`)
+      
+      // Initialize agents
+      const emulator = new SonnetEmulator(supabase, addTerminalEntry)
+      const condenser = new SonnetCondenser(supabase, addTerminalEntry)
+      const repurposer = new SonnetRepurposer(supabase, addTerminalEntry)
+      const deployer = new SonnetDeployer(supabase, addTerminalEntry)
+      
+      // EMULATE Phase
+      addTerminalEntry('system', '🔍 Phase 1: EMULATE - Analyzing project structure')
+      const analysis = await emulator.execute(projectFiles)
+      
+      // CONDENSE Phase
+      addTerminalEntry('system', '⚗️ Phase 2: CONDENSE - Extracting core capabilities')
+      const capabilities = await condenser.execute(analysis)
+      
+      // REPURPOSE Phase
+      addTerminalEntry('system', '🔄 Phase 3: REPURPOSE - Creating specialized agents')
+      const networkAgents = await repurposer.execute(capabilities)
+      
+      // REDEPLOY Phase
+      addTerminalEntry('system', '🚀 Phase 4: REDEPLOY - Deploying to Legion OS')
+      const deploymentResults = await deployer.execute(networkAgents)
+      
+      // Summary
+      const successCount = deploymentResults.filter(r => r.status === 'success').length
+      const failCount = deploymentResults.filter(r => r.status === 'failed').length
+      
+      addTerminalEntry('system', '✅ SonNetAI Protocol Integration Complete!')
+      addTerminalEntry('output', `📊 Results: ${successCount} agents deployed, ${failCount} failed`)
+      addTerminalEntry('output', '🌐 SonNetAI mesh network capabilities now active in Legion OS')
+      
+      // Refresh agents list
+      await loadAgents()
+      
+    } catch (error) {
+      addTerminalEntry('error', `❌ SonNetAI integration failed: ${error.message}`)
+      console.error('SonNetAI protocol error:', error)
+    }
+  }
+
   // Show loading state while checking authentication
   if (authLoading) {
     return (
@@ -526,6 +584,9 @@ function App() {
             {activeView === 'terminal' && (
               <CommandTerminal 
                 agents={agents}
+                terminalOutput={terminalOutput}
+                addTerminalEntry={addTerminalEntry}
+                runSonnetProtocol={runSonnetProtocol}
                 onAcquireSkill={acquireAgentSkill}
                 onEvolveSkills={evolveAgentSkills}
                 onSimulateEmulate={simulateEmulate}
