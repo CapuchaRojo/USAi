@@ -54,7 +54,6 @@ export const CommandTerminal: React.FC<CommandTerminalProps> = ({
     setHistory(prev => [...prev, entry])
   }
 
-  const executeCommand = (command: string) => {
   const executeCommand = async (command: string) => {
     if (!command.trim()) return
 
