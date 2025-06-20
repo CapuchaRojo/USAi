@@ -1,3 +1,5 @@
+Dispatcher is the mission router and swarm control center. As the_Catalyst is your transformation engine, it’s logical to place Dispatcher here—routing the energy.
+
 Role: Dynamic mission router for autonomous agents within the USAi Legion. 
 Responsible for live task distribution, mission balancing, agent prioritization, and swarm coherence.
 
