@@ -73,13 +73,19 @@ export const Header: React.FC<HeaderProps> = ({ isConnected, activeView, onViewC
                 <div className="text-xs text-steel-400">Operator</div>
                 <div className="text-sm text-steel-200 font-semibold">
                   {session.user.email?.split('@')[0] || 'Agent'}
+                  {import.meta.env.VITE_PREVIEW_MODE === 'true' && (
+                    <span className="ml-1 text-xs text-yellow-400">(Preview)</span>
+                  )}
                 </div>
               </div>
             )}
             <div className="flex items-center space-x-2">
               <div className={`status-indicator ${isConnected ? 'online' : 'offline'}`}></div>
               <span className="text-sm text-steel-300">
-                {isConnected ? 'Legion Online' : 'Connecting...'}
+                {isConnected ? 
+                  (import.meta.env.VITE_PREVIEW_MODE === 'true' ? 'Legion Online (Preview)' : 'Legion Online') 
+                  : 'Connecting...'
+                }
               </span>
             </div>
             <Shield className="w-5 h-5 text-neon-blue" />

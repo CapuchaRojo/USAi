@@ -99,6 +99,23 @@ supabase functions deploy --all
 
 # 6. Run an Agent
 python agents/supabase_agent/supabase_agent.py
+
+## 🔧 Preview Environment Setup
+
+For Bolt.new preview testing:
+
+1. **Environment Variables**: Ensure `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are set
+2. **Preview Mode**: Set `VITE_PREVIEW_MODE=true` to enable authentication bypass
+3. **OAuth Setup**: Add your Bolt.new preview URL to Supabase redirect URLs:
+   - Supabase Dashboard → Authentication → URL Configuration
+   - Add: `https://preview.bolt.new/project/your-project-id`
+4. **GitHub OAuth**: Update your GitHub OAuth app with the same preview URL
+
+### Preview Mode Features
+- Automatic authentication bypass when `VITE_PREVIEW_MODE=true`
+- Mock user session for testing authenticated features
+- Visual indicators showing preview mode status
+- Fallback handling for OAuth configuration issues
 🛠 SupaCore AI‑Informed Schema
 agents: uuid, role, skills, state, vector_fingerprint
 

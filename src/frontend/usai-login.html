@@ -17,26 +17,46 @@
   <h1>🔐 Login</h1>
 
   <button id="loginBtn">Login with GitHub</button>
+  <div id="status" style="margin-top: 20px; color: #666;"></div>
 
 
 
   <script>
+    const statusDiv = document.getElementById('status');
+    
+    // Check if we're in preview mode
+    const isPreviewMode = window.location.hostname.includes('bolt.new') || 
+                         window.location.hostname.includes('preview');
+    
+    if (isPreviewMode) {
+      statusDiv.innerHTML = '⚠️ Preview Mode: OAuth may not work. Use development bypass in main app.';
+    }
+    
 
     const supabase = window.supabase.createClient(
 
       'https://hlskbmcsrcjobvknrrhj.supabase.co',
-
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhsc2tibWNzcmNqb2J2a25ycmhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg3NTQ3MjcsImV4cCI6MjA2NDMzMDcyN30.S3ejjjORIEeo2ssh0N_DSYXEbBNg-4CMJN6q98Ooa4w'
+      // Use environment variables or fallback to your project
+      window.VITE_SUPABASE_URL || 'https://hlskbmcsrcjobvknrrhj.supabase.co',
+      window.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhsc2tibWNzcmNqb2J2a25ycmhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg3NTQ3MjcsImV4cCI6MjA2NDMzMDcyN30.S3ejjjORIEeo2ssh0N_DSYXEbBNg-4CMJN6q98Ooa4w'
 
     );
 
 
 
     document.getElementById('loginBtn').addEventListener('click', () => {
+      statusDiv.innerHTML = 'Initiating GitHub OAuth...';
 
       supabase.auth.signInWithOAuth({
 
         provider: 'github',
+        options: {
+          redirectTo: window.location.origin
+        }
+      }).then(({ error }) => {
+        if (error) {
+          statusDiv.innerHTML = `❌ OAuth Error: ${error.message}`;
+        }
 
       });
 

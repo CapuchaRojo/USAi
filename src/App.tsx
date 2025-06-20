@@ -45,6 +45,27 @@ function App() {
       setSession(session)
       setIsConnected(!!session)
       setAuthLoading(false)
+      
+      // Development authentication bypass for preview mode
+      if (!session && import.meta.env.VITE_PREVIEW_MODE === 'true') {
+        console.log('Preview mode detected - simulating authenticated session')
+        const mockSession = {
+          user: { 
+            id: 'preview-user-' + Date.now(),
+            email: 'preview@usai.legion',
+            aud: 'authenticated',
+            role: 'authenticated'
+          },
+          access_token: 'preview-token',
+          refresh_token: 'preview-refresh',
+          expires_at: Date.now() + 3600000,
+          expires_in: 3600,
+          token_type: 'bearer'
+        }
+        setSession(mockSession as any)
+        setIsConnected(true)
+        addEntry('system', 'Preview mode: Mock authentication enabled')
+      }
     })
 
     // Listen for auth changes
