@@ -93,4 +93,4 @@
         Legion Protocol
         <span className="mr-2">🔄</span>
       <h2 className="text-xl font-semibold flex items-center mb-4">
-    <div className="glass-panel p-6 mb-6">
+     <div className="glass-panel p-6 mb-6">
