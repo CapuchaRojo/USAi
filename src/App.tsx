@@ -18,7 +18,7 @@ const createCoreAgents = async () => {
   // Add this guard clause
   if (!session?.user?.id) {
     console.error("User session missing - cannot create agents");
-    addEntry('error', 'User authentication required to deploy agents');
+    addTerminalEntry('error', 'User authentication required to deploy agents');
     return;
   }
   
@@ -236,22 +236,22 @@ function App() {
         if (!existing) {
           const newAgent = await createAgent(agent.name, agent.type, agent.skills)
           console.log(`Successfully created ${agent.name} with ID:`, newAgent)
-          addEntry('success', `Created core agent: ${agent.name}`)
+          addTerminalEntry('success', `Created core agent: ${agent.name}`)
         } else {
           console.log(`Agent ${agent.name} already exists with ID:`, existing.id)
-          addEntry('info', `Core agent ${agent.name} already exists`)
+          addTerminalEntry('info', `Core agent ${agent.name} already exists`)
         }
       } catch (error) {
-        addEntry('error', `Failed to create ${agent.name}: ${error.message}`)
+        addTerminalEntry('error', `Failed to create ${agent.name}: ${error.message}`)
         console.error(`Failed to create ${agent.name}:`, error)
         
         // Implement retry logic for transient errors
         try {
           await new Promise(resolve => setTimeout(resolve, 1000))
           await createAgent(agent.name, agent.type, agent.skills)
-          addEntry('success', `Retry successful for ${agent.name}`)
+          addTerminalEntry('success', `Retry successful for ${agent.name}`)
         } catch (retryError) {
-          addEntry('error', `Retry failed for ${agent.name}: ${retryError.message}`)
+          addTerminalEntry('error', `Retry failed for ${agent.name}: ${retryError.message}`)
         }
       }
     }
@@ -268,7 +268,7 @@ function App() {
     const isPreviewUser = session.user.id === '00000000-0000-0000-0000-000000000000';
     
     if (!isPreviewUser && !uuidRegex.test(session.user.id)) {
-      addEntry('error', `Invalid user ID format: ${session.user.id}`);
+      addTerminalEntry('error', `Invalid user ID format: ${session.user.id}`);
       return;
     }
 
@@ -288,10 +288,10 @@ function App() {
       })
 
       if (error) throw error
-      addEntry('success', `Created agent: ${name}`)
+      addTerminalEntry('success', `Created agent: ${name}`)
       await loadAgents()
     } catch (error) {
-      addEntry('error', `Failed to create agent ${name}: ${error.message}`)
+      addTerminalEntry('error', `Failed to create agent ${name}: ${error.message}`)
       console.error('Failed to create agent:', error)
     }
   }
