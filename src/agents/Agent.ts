@@ -7,6 +7,7 @@ export interface AgentLog {
 }
 
 export abstract class Agent {
+  private twinState: 'synced' | 'desynced' = 'desynced';
   protected supabase: SupabaseClient
   protected addLog: (type: string, content: string) => void
   protected agentId?: string
@@ -21,6 +22,13 @@ export abstract class Agent {
     this.addLog = addLog
     this.agentName = agentName
   }
+
+  synchronizeTwin(twinData: any) {
+    this.twinState = 'synced';
+    this.applyTwinState(twinData);
+  }
+
+  protected abstract applyTwinState(data: any): void;
 
   protected async logToDatabase(event: string, details: Record<string, any>) {
     try {
@@ -47,5 +55,3 @@ export abstract class Agent {
 
   abstract execute(...args: any[]): Promise<any>
 }
-
-export { Agent }
