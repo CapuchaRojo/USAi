@@ -196,56 +196,60 @@ function App() {
 
     const coreAgents = [
       {
-        agent_name: 'Oracle-01',
+        name: 'Oracle-01',
         type: 'oracle',
-        function_called: 'foresight_analysis',
         skills: { prediction: 0.9, analysis: 0.95, pattern_recognition: 0.88 }
       },
       {
-        agent_name: 'Dispatcher-01',
+        name: 'Dispatcher-01',
         type: 'dispatcher',
-        function_called: 'task_routing',
         skills: { load_balancing: 0.92, task_distribution: 0.89, swarm_coordination: 0.94 }
       },
       {
-        agent_name: 'Controller-01',
+        name: 'Controller-01',
         type: 'controller',
-        function_called: 'mission_oversight',
         skills: { command_authority: 0.98, override_capability: 0.96, system_governance: 0.93 }
       }
     ]
 
     for (const agent of coreAgents) {
-      const { data: existing, error: checkError } = await supabase
-        .from('agents')
-        .select('id')
-        .eq('agent_name', agent.agent_name)
-        .maybeSingle()
+      try {
+        // Check if agent already exists
+        const { data: existing, error: checkError } = await supabase
+          .from('agents')
+          .select('id')
+          .eq('agent_name', agent.name)
+          .maybeSingle()
 
-      if (checkError) {
-        console.error(`Error checking for existing agent ${agent.agent_name}:`, checkError)
-        continue
-      }
-      if (!existing) {
-        try {
-          const { data: newAgent, error } = await supabase.rpc('create_agent', {
-            p_agent_name: agent.agent_name,
-            p_type: agent.type,
-            p_function_called: agent.function_called,
-            p_skills: agent.skills,
-            p_user_id: session.user.id
-          })
-
-          if (error) {
-            console.error(`Failed to create ${agent.agent_name}:`, error)
+        if (checkError) {
+          console.error(`Error checking for existing agent ${agent.name}:`, checkError)
+          continue
           } else {
             console.log(`Successfully created ${agent.agent_name} with ID:`, newAgent)
           }
         } catch (error) {
           console.error(`Error creating ${agent.agent_name}:`, error)
         }
-      } else {
-        console.log(`Agent ${agent.agent_name} already exists with ID:`, existing.id)
+        
+        if (!existing) {
+          await createAgent(agent.name, agent.type, agent.skills)
+          addEntry('success', `Created core agent: ${agent.name}`)
+        } else {
+          console.log(`Agent ${agent.name} already exists with ID:`, existing.id)
+          addEntry('info', `Core agent ${agent.name} already exists`)
+        }
+      } catch (error) {
+        addEntry('error', `Failed to create ${agent.name}: ${error.message}`)
+        console.error(`Failed to create ${agent.name}:`, error)
+        
+        // Implement retry logic for transient errors
+        try {
+          await new Promise(resolve => setTimeout(resolve, 1000))
+          await createAgent(agent.name, agent.type, agent.skills)
+          addEntry('success', `Retry successful for ${agent.name}`)
+        } catch (retryError) {
+          addEntry('error', `Retry failed for ${agent.name}: ${retryError.message}`)
+        }
       }
     }
   }
@@ -254,6 +258,15 @@ function App() {
     if (!session?.user?.id) {
       console.error('Cannot create agent - user not authenticated')
       return
+    }
+
+    // Validate UUID format with preview mode exception
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{3}-[0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const isPreviewUser = session.user.id === '00000000-0000-0000-0000-000000000000';
+    
+    if (!isPreviewUser && !uuidRegex.test(session.user.id)) {
+      addEntry('error', `Invalid user ID format: ${session.user.id}`);
+      return;
     }
 
     // Validate UUID format before database operation
@@ -273,8 +286,10 @@ function App() {
       })
 
       if (error) throw error
+      addEntry('success', `Created agent: ${name}`)
       await loadAgents()
     } catch (error) {
+      addEntry('error', `Failed to create agent ${name}: ${error.message}`)
       console.error('Failed to create agent:', error)
     }
   }
