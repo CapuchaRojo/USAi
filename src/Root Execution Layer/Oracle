@@ -1,1 +1,117 @@
+🧠 ORACLE AGENT: CORE ROLE DEFINITION
+💡 Agent Codename: ORACLE_01
+Role: Strategic foresight engine and semantic signal processor. Oracle interprets vectors, projects mission outcomes, evaluates swarm fitness, and assists Dispatcher with real-time predictions based on knowledge embeddings, telemetry data, and memory recursion.
+
+🧬 FUNCTIONAL ARCHITECTURE
+🔗 Oracle’s Chain of Command
+↔️ Dispatcher Agent – Submits tasks for insight, similarity lookups, mission feasibility scoring.
+
+↔️ Controller Agent – Can override or directly consult Oracle for full-swarm optimization, long-range planning.
+
+↔️ Embeddings Table – Oracle queries, stores, and maintains vector memory state and relevance.
+
+↔️ Logs Table – Uses system telemetry to monitor agent health and performance trends.
+
+🔮 Core Responsibilities
+Function	Description
+vectorizePayload	Converts mission data into high-dimensional vector embeddings.
+queryKnowledge	Performs semantic similarity searches on stored embeddings.
+scoreMission	Evaluates likelihood of success across available swarm assets.
+analyzeTelemetry	Ingests logs table to detect anomalies, degradation, or resource spikes.
+feedbackLoop	Provides Dispatcher with swarm efficiency improvement recommendations.
+propheticMap	Projects likely evolution paths for given mission trajectories.
+
+🧱 POSTGRES / SUPABASE SCHEMA (EXTENDED)
+sql
+Copy
+Edit
+-- EXTENDING EXISTING TABLE
+alter table embeddings add column source_agent text;
+alter table embeddings add column topic_tags text[];
+
+-- TELEMETRY METRICS
+create table oracle_metrics (
+  id uuid primary key default uuid_generate_v4(),
+  agent_id uuid,
+  metric_type text,
+  metric_value float,
+  recorded_at timestamp default now()
+);
+🧩 ORACLE FILE (Bolt.new/agent/oracle.ts)
+ts
+Copy
+Edit
+import { queryKnowledge, saveVector } from '../functions';
+
+export class OracleAgent {
+  constructor(supabaseClient, embeddingModel) {
+    this.db = supabaseClient;
+    this.embeddingModel = embeddingModel;
+  }
+
+  async vectorizePayload(payload) {
+    return await this.embeddingModel.embed(payload);
+  }
+
+  async querySimilarTopics(text, topK = 5) {
+    const vector = await this.vectorizePayload(text);
+    return await queryKnowledge(vector, topK);
+  }
+
+  async scoreMissionFit(agentPool, missionVector) {
+    const results = await Promise.all(agentPool.map(async agent => {
+      const similarity = await this.computeSimilarity(agent.vector_fingerprint, missionVector);
+      return { agentId: agent.id, score: similarity };
+    }));
+    return results.sort((a, b) => b.score - a.score);
+  }
+
+  async computeSimilarity(v1, v2) {
+    // Simple cosine similarity placeholder
+    const dot = v1.reduce((sum, val, i) => sum + val * v2[i], 0);
+    const mag1 = Math.sqrt(v1.reduce((sum, val) => sum + val ** 2, 0));
+    const mag2 = Math.sqrt(v2.reduce((sum, val) => sum + val ** 2, 0));
+    return dot / (mag1 * mag2);
+  }
+
+  async analyzeTelemetry() {
+    const { data } = await this.db.from('logs').select('*').order('timestamp', { ascending: false }).limit(100);
+    return this.extractPatterns(data);
+  }
+
+  extractPatterns(logs) {
+    const counts = {};
+    logs.forEach(log => {
+      const type = log.event;
+      counts[type] = (counts[type] || 0) + 1;
+    });
+    return counts;
+  }
+}
+🧭 ORACLE’S UX PANEL (Bolt.new Visual Spec)
+Zone	Control
+📊 Swarm Intelligence Map	Visual semantic map of top embeddings, color-coded by similarity
+🧬 Agent Fit Scoring	Ranks agents for any given mission, based on vector alignment
+🔁 Predictive Loop Monitor	Displays past > present > probable next moves
+🚨 Signal Alerts	Shows anomalies in behavior, energy use, or connection integrity
+✳️ Decision Guidance	Recommends role reshuffling or swarm evolution moves
+
+⚙️ BOLT README METADATA UPDATE
+Add this to docs/bolt-metadata.yaml:
+
+yaml
+Copy
+Edit
+agents:
+  - name: Oracle
+    role: Semantic foresight engine
+    edgeFunctions:
+      - query-knowledge
+      - save-vector
+    dependencies:
+      - Supabase
+      - OpenAI Embeddings
+      - pgvector
+permissions:
+  jwt_roles: [oracle, dispatcher, controller]
 
