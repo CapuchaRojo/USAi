@@ -53,42 +53,50 @@ function App() {
   const [authLoading, setAuthLoading] = useState(true)
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setIsConnected(!!session)
-      setAuthLoading(false)
+    const initializeAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
       
-      // Development authentication bypass for preview mode
-      if (!session && import.meta.env.VITE_PREVIEW_MODE === 'true') {
-        console.log('Preview mode detected - simulating authenticated session')
-        const mockSession = {
-          user: { 
-            id: 'preview-user-' + Date.now(),
-            email: 'preview@usai.legion',
-            aud: 'authenticated',
-            role: 'authenticated'
-          },
-          access_token: 'preview-token',
-          refresh_token: 'preview-refresh',
-          expires_at: Date.now() + 3600000,
-          expires_in: 3600,
-          token_type: 'bearer'
-        }
-        setSession(mockSession as any)
+      // Only update if session exists to prevent overwriting valid sessions
+      if (session) {
+        setSession(session)
         setIsConnected(true)
-        addEntry('system', 'Preview mode: Mock authentication enabled')
+      } else {
+        // Development authentication bypass for preview mode
+        if (import.meta.env.VITE_PREVIEW_MODE === 'true') {
+          console.log('Preview mode detected - simulating authenticated session')
+          const mockSession = {
+            user: { 
+              id: 'preview-user-' + Date.now(),
+              email: 'preview@usai.legion',
+              aud: 'authenticated',
+              role: 'authenticated'
+            },
+            access_token: 'preview-token',
+            refresh_token: 'preview-refresh',
+            expires_at: Date.now() + 3600000,
+            expires_in: 3600,
+            token_type: 'bearer'
+          }
+          setSession(mockSession as any)
+          setIsConnected(true)
+        }
       }
-    })
+      setAuthLoading(false)
+    }
+    
+    initializeAuth()
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-      setIsConnected(!!session)
-      setAuthLoading(false)
-      
-      // Clear agents when user signs out
-      if (!session) {
+      // Only update if session changes meaningfully
+      if (session !== null) {
+        setSession(session)
+        setIsConnected(!!session)
+        setAuthLoading(false)
+      } else {
+        // Handle sign out
+        setSession(null)
+        setIsConnected(false)
         setAgents([])
         setSelectedAgent(null)
       }
@@ -167,8 +175,9 @@ function App() {
   }
 
   const createCoreAgents = async () => {
-    if (!isConnected || !session) {
-      console.log('Cannot create core agents - user not authenticated')
+    // Add session guard clause
+    if (!session?.user?.id) {
+      console.error('User session missing - cannot create core agents')
       return
     }
 
@@ -211,7 +220,8 @@ function App() {
           p_agent_name: agent.agent_name,
           p_type: agent.type,
           p_function_called: agent.function_called,
-          p_skills: agent.skills
+          p_skills: agent.skills,
+          p_user_id: session.user.id
         })
 
         if (error) {
@@ -248,7 +258,7 @@ function App() {
   }
 
   const updateAgentStatus = async (agentId: string, status: string, state?: string) => {
-    if (!isConnected || !session) {
+    if (!session?.user?.id) {
       console.error('Cannot update agent status - user not authenticated')
       return
     }
@@ -268,7 +278,7 @@ function App() {
   }
 
   const acquireAgentSkill = async (agentId: string, skill: string, value: number) => {
-    if (!isConnected || !session) {
+    if (!session?.user?.id) {
       console.error('Cannot acquire agent skill - user not authenticated')
       return
     }
@@ -290,7 +300,7 @@ function App() {
   }
 
   const evolveAgentSkills = async (agentId: string, evolutionFactor: number = 0.1) => {
-    if (!isConnected || !session) {
+    if (!session?.user?.id) {
       console.error('Cannot evolve agent skills - user not authenticated')
       return
     }
@@ -312,7 +322,7 @@ function App() {
 
   // Legion Protocol Simulation Functions
   const simulateEmulate = async (id: string, moduleName: string, description: string) => {
-    if (!isConnected || !session) {
+    if (!session?.user?.id) {
       console.error('Cannot simulate emulate phase - user not authenticated')
       return
     }
@@ -333,7 +343,7 @@ function App() {
   }
 
   const simulateCondense = async (id: string, utilityName: string, description: string) => {
-    if (!isConnected || !session) {
+    if (!session?.user?.id) {
       console.error('Cannot simulate condense phase - user not authenticated')
       return
     }
@@ -354,7 +364,7 @@ function App() {
   }
 
   const simulateRepurpose = async (id: string, toolName: string, description: string) => {
-    if (!isConnected || !session) {
+    if (!session?.user?.id) {
       console.error('Cannot simulate repurpose phase - user not authenticated')
       return
     }
@@ -375,7 +385,7 @@ function App() {
   }
 
   const simulateRedeploy = async (id: string, toolName: string, description: string) => {
-    if (!isConnected || !session) {
+    if (!session?.user?.id) {
       console.error('Cannot simulate redeploy phase - user not authenticated')
       return
     }
