@@ -25,6 +25,9 @@ interface TerminalEntry {
 
 export const CommandTerminal: React.FC<CommandTerminalProps> = ({ 
   agents, 
+  terminalOutput,
+  addTerminalEntry,
+  runSonnetProtocol,
   onAcquireSkill,
   onEvolveSkills,
   onSimulateEmulate,

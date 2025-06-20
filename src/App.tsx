@@ -186,16 +186,83 @@ function App() {
   }
 
   const createCoreAgents = async () => {
-    // Add session guard clause
-    if (!session?.user?.id) {
-      console.error('User session missing - cannot create core agents')
-      return
-    }
+    try {
+      addTerminalEntry('system', 'Creating core agents...');
+      
+      if (!session?.user?.id) {
+        throw new Error('User authentication required to deploy agents');
+      }
+      
+      console.log('Creating core agents for authenticated user:', session.user.email);
+      
+      // Validate UUID format
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+      if (!uuidRegex.test(session.user.id)) {
+        console.error(`Invalid user ID format for core agents: ${session.user.id}`)
+        return
+      }
 
-    // Validate UUID format
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
-    if (!uuidRegex.test(session.user.id)) {
-      console.error(`Invalid user ID format for core agents: ${session.user.id}`)
+      const coreAgents = [
+        {
+          name: 'Oracle-01',
+          type: 'oracle',
+          skills: { prediction: 0.9, analysis: 0.95, pattern_recognition: 0.88 }
+        },
+        {
+          name: 'Dispatcher-01',
+          type: 'dispatcher',
+          skills: { load_balancing: 0.92, task_distribution: 0.89, swarm_coordination: 0.94 }
+        },
+        {
+          name: 'Controller-01',
+          type: 'controller',
+          skills: { command_authority: 0.98, override_capability: 0.96, system_governance: 0.93 }
+        }
+      ]
+
+      for (const agent of coreAgents) {
+        try {
+          // Check if agent already exists
+          const { data: existing, error: checkError } = await supabase
+            .from('agents')
+            .select('id')
+            .eq('agent_name', agent.name)
+            .maybeSingle()
+
+          if (checkError) {
+            console.error(`Error checking for existing agent ${agent.name}:`, checkError)
+            continue
+          }
+          
+          if (!existing) {
+            const newAgent = await createAgent(agent.name, agent.type, agent.skills)
+            console.log(`Successfully created ${agent.name} with ID:`, newAgent)
+            addTerminalEntry('success', `Created core agent: ${agent.name}`)
+          } else {
+            console.log(`Agent ${agent.name} already exists with ID:`, existing.id)
+            addTerminalEntry('info', `Core agent ${agent.name} already exists`)
+          }
+        } catch (error) {
+          addTerminalEntry('error', `Failed to create ${agent.name}: ${error.message}`)
+          console.error(`Failed to create ${agent.name}:`, error)
+          
+          // Implement retry logic for transient errors
+          try {
+            await new Promise(resolve => setTimeout(resolve, 1000))
+            await createAgent(agent.name, agent.type, agent.skills)
+            addTerminalEntry('success', `Retry successful for ${agent.name}`)
+          } catch (retryError) {
+            addTerminalEntry('error', `Retry failed for ${agent.name}: ${retryError.message}`)
+          }
+        }
+      }
+      
+      addTerminalEntry('success', 'Core agents created successfully');
+    } catch (error) {
+      addTerminalEntry('error', `Core agent creation failed: ${error.message}`);
+      console.error('Core agent creation failed:', error);
+    }
+  }
       return
     }
 
