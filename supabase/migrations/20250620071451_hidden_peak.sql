@@ -44,6 +44,40 @@ BEGIN
   END IF;
   
   -- Insert the new agent
+  -- Update existing create_agent function with UUID validation
+CREATE OR REPLACE FUNCTION create_agent(
+  p_agent_name text,
+  p_type text,
+  p_function_called text,
+  p_skills jsonb,
+  p_user_id uuid
+) RETURNS uuid
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  new_agent_id uuid;
+  current_user_id uuid;
+BEGIN
+  -- Get the current authenticated user ID
+  current_user_id := auth.uid();
+  
+  -- Ensure we have a valid user ID and it matches the provided user_id
+  IF current_user_id IS NULL THEN
+    RAISE EXCEPTION 'User must be authenticated to create agents';
+  END IF;
+  
+  IF current_user_id != p_user_id THEN
+    RAISE EXCEPTION 'User can only create agents for themselves';
+  END IF;
+
+  -- Add UUID format validation here
+  IF p_user_id::text !~ '^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$' THEN
+    RAISE EXCEPTION 'Invalid user ID format';
+  END IF;
+  
+  -- Insert the new agent
   INSERT INTO agents(
     agent_name, 
     type, 
