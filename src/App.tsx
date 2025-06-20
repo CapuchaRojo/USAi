@@ -236,9 +236,9 @@ function App() {
         p_agent_name: name,
         p_type: type,
         p_function_called: 'initialize',
-        p_skills: skills
+        p_skills: skills,
         p_user_id: session.user.id 
-      })
+      });
 
       if (error) throw error
       await loadAgents()
