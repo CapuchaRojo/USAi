@@ -9,17 +9,19 @@ import { CommandTerminal } from './components/CommandTerminal'
 import { AgentStatus } from './components/AgentStatus'
 import { LegionProtocol } from './components/LegionProtocol'
 
+// src/types.ts
 export interface Agent {
-  id: string
-  agent_name: string
-  type: string
-  status: 'active' | 'idle' | 'working' | 'error' | 'offline'
-  current_state: string
-  skills: Record<string, any>
-  vector_fingerprint?: number[]
-  created_at: string
-  user_id: string
+  id: string;
+  agent_name: string;
+  type: string;
+  status: 'active' | 'idle' | 'offline' | 'working' | 'error';
+  current_state: string;
+  skills: Record<string, number>;
+  vector_fingerprint?: number[];
+  created_at: string;
+  user_id: string;
 }
+
 
 export interface Mission {
   id: string
