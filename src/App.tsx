@@ -226,10 +226,10 @@ function App() {
   }
 
   const createAgent = async (name: string, type: string, skills: Record<string, any> = {}) => {
-    if (!isConnected || !session) {
-      console.error('Cannot create agent - user not authenticated')
-      return
-    }
+    if (!session?.user?.id) {
+     console.error('Cannot create agent - user not authenticated');
+     return;
+   }
 
     try {
       const { error } = await supabase.rpc('create_agent', {
@@ -237,6 +237,7 @@ function App() {
         p_type: type,
         p_function_called: 'initialize',
         p_skills: skills
+        p_user_id: session.user.id 
       })
 
       if (error) throw error
