@@ -232,6 +232,49 @@ function App() {
     }
   }
 
+  const acquireAgentSkill = async (agentId: string, skill: string, value: number) => {
+    if (!isConnected || !session) {
+      console.error('Cannot acquire agent skill - user not authenticated')
+      return
+    }
+
+    try {
+      const { data, error } = await supabase.rpc('update_agent_skill', {
+        agent_uuid: agentId,
+        skill_name: skill,
+        skill_value: value
+      })
+
+      if (error) throw error
+      await loadAgents() // Refresh UI with updated skills
+      return data
+    } catch (error) {
+      console.error('Failed to acquire agent skill:', error)
+      throw error
+    }
+  }
+
+  const evolveAgentSkills = async (agentId: string, evolutionFactor: number = 0.1) => {
+    if (!isConnected || !session) {
+      console.error('Cannot evolve agent skills - user not authenticated')
+      return
+    }
+
+    try {
+      const { data, error } = await supabase.rpc('evolve_agent_skills', {
+        agent_uuid: agentId,
+        evolution_factor: evolutionFactor
+      })
+
+      if (error) throw error
+      await loadAgents() // Refresh UI with evolved skills
+      return data
+    } catch (error) {
+      console.error('Failed to evolve agent skills:', error)
+      throw error
+    }
+  }
+
   // Show loading state while checking authentication
   if (authLoading) {
     return (
@@ -320,6 +363,8 @@ function App() {
             {activeView === 'terminal' && (
               <CommandTerminal 
                 agents={agents}
+                onAcquireSkill={acquireAgentSkill}
+                onEvolveSkills={evolveAgentSkills}
                 onExecuteCommand={(command) => console.log('Execute:', command)}
               />
             )}
