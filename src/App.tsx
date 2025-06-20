@@ -64,9 +64,13 @@ function App() {
         // Development authentication bypass for preview mode
         if (import.meta.env.VITE_PREVIEW_MODE === 'true') {
           console.log('Preview mode detected - simulating authenticated session')
+          
+          // Generate valid UUID format for preview mode
+          const validPreviewId = '00000000-0000-0000-0000-000000000000'
+          
           const mockSession = {
             user: { 
-              id: 'preview-user-' + Date.now(),
+              id: validPreviewId,
               email: 'preview@usai.legion',
               aud: 'authenticated',
               role: 'authenticated'
@@ -181,6 +185,13 @@ function App() {
       return
     }
 
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+    if (!uuidRegex.test(session.user.id)) {
+      console.error(`Invalid user ID format for core agents: ${session.user.id}`)
+      return
+    }
+
     console.log('Creating core agents for authenticated user:', session.user.email)
 
     const coreAgents = [
@@ -216,18 +227,22 @@ function App() {
         continue
       }
       if (!existing) {
-        const { data: newAgent, error } = await supabase.rpc('create_agent', {
-          p_agent_name: agent.agent_name,
-          p_type: agent.type,
-          p_function_called: agent.function_called,
-          p_skills: agent.skills,
-          p_user_id: session.user.id
-        })
+        try {
+          const { data: newAgent, error } = await supabase.rpc('create_agent', {
+            p_agent_name: agent.agent_name,
+            p_type: agent.type,
+            p_function_called: agent.function_called,
+            p_skills: agent.skills,
+            p_user_id: session.user.id
+          })
 
-        if (error) {
-          console.error(`Failed to create ${agent.agent_name}:`, error)
-        } else {
-          console.log(`Successfully created ${agent.agent_name} with ID:`, newAgent)
+          if (error) {
+            console.error(`Failed to create ${agent.agent_name}:`, error)
+          } else {
+            console.log(`Successfully created ${agent.agent_name} with ID:`, newAgent)
+          }
+        } catch (error) {
+          console.error(`Error creating ${agent.agent_name}:`, error)
         }
       } else {
         console.log(`Agent ${agent.agent_name} already exists with ID:`, existing.id)
@@ -237,9 +252,16 @@ function App() {
 
   const createAgent = async (name: string, type: string, skills: Record<string, any> = {}) => {
     if (!session?.user?.id) {
-     console.error('Cannot create agent - user not authenticated');
-     return;
-   }
+      console.error('Cannot create agent - user not authenticated')
+      return
+    }
+
+    // Validate UUID format before database operation
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+    if (!uuidRegex.test(session.user.id)) {
+      console.error(`Invalid user ID format: ${session.user.id}`)
+      return
+    }
 
     try {
       const { error } = await supabase.rpc('create_agent', {
@@ -247,8 +269,8 @@ function App() {
         p_type: type,
         p_function_called: 'initialize',
         p_skills: skills,
-        p_user_id: session.user.id 
-      });
+        p_user_id: session.user.id
+      })
 
       if (error) throw error
       await loadAgents()
