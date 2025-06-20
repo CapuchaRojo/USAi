@@ -1,0 +1,28 @@
+Role: Dynamic mission router for autonomous agents within the USAi Legion. 
+Responsible for live task distribution, mission balancing, agent prioritization, and swarm coherence.
+
+🧬 FUNCTIONAL ARCHITECTURE
+🔗 Dispatcher’s Chain of Command
+↔️ Controller Agent – Receives commands from the Commander; has override capability.
+
+🔮 Oracle Agent – Provides foresight, predictions, and evaluation matrices. 
+  Dispatcher consults Oracle for priority alignment.
+
+🔁 Swarm Agents – Executes missions dispatched via task packets: payload, context, fingerprint, TTL.
+
+🔨 Core Responsibilities
+Function	Description
+  run-agent-task	Launches agent with mission payload, timeouts, and objective criteria.
+  save-vector	Attaches preprocessed mission context or raw data to embeddings table.
+  heartbeat	Pings live agents, rebalances if one drops.
+  query-knowledge	Interfaces with Oracle or memory layer for situational awareness.
+  assign-mission	Dynamically maps roles to agents based on skill + context vectors.
+  deactivate-agent	Gracefully retires or pauses idle agents.
+  telemetry-log	Writes to logs table for controller/oracle visibility.
+
+🛡️ Security & Compliance
+Requires JWT role = "dispatcher"
+
+All commands use secure edge functions via agent-webhook
+
+API key validation + HMAC signature headers for all task launches
