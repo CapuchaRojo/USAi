@@ -1,4 +1,4 @@
-          </div>
+          <div>
           
             <div className="text-sm text-steel-300 mt-1">Idle Agents</div>
           <div className="glass-panel p-4 flex flex-col items-center">
