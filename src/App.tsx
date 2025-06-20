@@ -20,6 +20,7 @@ const createCoreAgents = async () => {
   console.log('Creating core agents for authenticated user:', session.user.email);
   // ... rest of function
 }
+
 // src/types.ts
 export interface Agent {
   id: string;
@@ -35,12 +36,12 @@ export interface Agent {
 
 
 export interface Mission {
-  id: string
-  name: string
-  description: string
-  status: 'pending' | 'active' | 'completed' | 'failed'
-  assigned_agents: string[]
-  created_at: string
+  id: string;
+  name: string;
+  description: string;
+  status: 'pending' | 'active' | 'completed' | 'failed';
+  assigned_agents: string[];
+  created_at: string;
 }
 
 function App() {
@@ -224,15 +225,11 @@ function App() {
         if (checkError) {
           console.error(`Error checking for existing agent ${agent.name}:`, checkError)
           continue
-          } else {
-            console.log(`Successfully created ${agent.agent_name} with ID:`, newAgent)
-          }
-        } catch (error) {
-          console.error(`Error creating ${agent.agent_name}:`, error)
         }
         
         if (!existing) {
-          await createAgent(agent.name, agent.type, agent.skills)
+          const newAgent = await createAgent(agent.name, agent.type, agent.skills)
+          console.log(`Successfully created ${agent.name} with ID:`, newAgent)
           addEntry('success', `Created core agent: ${agent.name}`)
         } else {
           console.log(`Agent ${agent.name} already exists with ID:`, existing.id)
@@ -270,7 +267,6 @@ function App() {
     }
 
     // Validate UUID format before database operation
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
     if (!uuidRegex.test(session.user.id)) {
       console.error(`Invalid user ID format: ${session.user.id}`)
       return
