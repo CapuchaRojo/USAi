@@ -24,7 +24,7 @@
           </div>
         </div>
         </div>
-          </svg>
+          <svg>
       </div>
             </text>
       
