@@ -100,29 +100,29 @@ export const SwarmMap: React.FC<SwarmMapProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm text-steel-300 mb-1">Agent Name</label>
-            <input
-              type="text"
-              placeholder="Agent Name"
-              value={newAgentName}
-              onChange={(e) => setNewAgentName(e.target.value)}
-              className="w-full bg-steel-800 border border-steel-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-neon-pink"
-              placeholder="e.g., Sentinel-01"
-            />
+              <input
+                type="text"
+                placeholder="Agent Name"
+                value={newAgentName}
+                onChange={(e) => setNewAgentName(e.target.value)}
+                className="w-full bg-steel-800 border border-steel-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-neon-pink"
+                placeholder="e.g., Sentinel-01"
+              />
             </div>
             
             <div>
               <label className="block text-sm text-steel-300 mb-1">Agent Type</label>
-            <select
-              value={newAgentType}
-              onChange={(e) => setNewAgentType(e.target.value)}
-              className="w-full bg-steel-800 border border-steel-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-neon-pink"
-            >
-              <option value="adaptive">Adaptive</option>
-              <option value="controller">Controller</option>
-              <option value="oracle">Oracle</option>
-              <option value="dispatcher">Dispatcher</option>
-              <option value="security">Security</option>
-            </select>
+              <select
+                value={newAgentType}
+                onChange={(e) => setNewAgentType(e.target.value)}
+                className="w-full bg-steel-800 border border-steel-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-neon-pink"
+              >
+                <option value="adaptive">Adaptive</option>
+                <option value="controller">Controller</option>
+                <option value="oracle">Oracle</option>
+                <option value="dispatcher">Dispatcher</option>
+                <option value="security">Security</option>
+              </select>
             </div>
           </div>
           
@@ -219,112 +219,6 @@ export const SwarmMap: React.FC<SwarmMapProps> = ({
       {agents.length === 0 && (
         <div className="text-center py-12">
           <div className="text-5xl mb-4">🕸️</div>
-          <h3 className="text-xl font-semibold text-steel-300 mb-2">No Agents Deployed</h3>
-          <p className="text-steel-500 mb-4">The Legion awaits your command. Spawn your first agent to begin.</p>
-          <button
-            onClick={() => setShowCreateForm(true)}
-            className="px-6 py-3 bg-neon-pink text-steel-900 rounded-lg hover:bg-neon-pink/90 transition-colors font-semibold"
-          >
-            Initialize Legion
-          </button>
-        </div>
-      )}
-    </div>
-  )
-}
-              <button
-                onClick={handleCreateAgent}
-                className="flex-1 px-3 py-2 bg-neon-pink text-steel-900 rounded hover:bg-neon-pink/90 transition-colors"
-              >
-                Create
-              </button>
-              <button
-                onClick={() => setShowCreateForm(false)}
-                className="px-3 py-2 bg-steel-700 text-steel-300 rounded hover:bg-steel-600 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Agent Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {agents.map((agent) => {
-          const Icon = agentTypeIcons[agent.type as keyof typeof agentTypeIcons] || Cpu
-          const typeColor = agentTypeColors[agent.type as keyof typeof agentTypeColors] || 'border-steel-500 bg-steel-500/10 text-steel-300'
-          const statusColor = getAgentStatusColor(agent.status)
-          const isSelected = selectedAgent?.id === agent.id
-
-          return (
-            <div
-              key={agent.id}
-              onClick={() => onAgentSelect(isSelected ? null : agent)}
-              className={`
-                agent-node ${agent.status} ${typeColor}
-                ${isSelected ? 'ring-2 ring-neon-pink ring-offset-2 ring-offset-steel-900' : ''}
-                ${statusColor}
-              `}
-            >
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center space-x-2">
-                  <Icon className="w-5 h-5" />
-                  <span className="font-semibold text-sm">{agent.agent_name}</span>
-                </div>
-                <div className={`status-indicator ${agent.status === 'active' ? 'online' : agent.status === 'working' ? 'busy' : agent.status === 'error' ? 'error' : 'offline'}`}></div>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs">
-                  <span className="text-steel-400">Type:</span>
-                  <span className="capitalize">{agent.type}</span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-steel-400">State:</span>
-                  <span className="capitalize">{agent.current_state}</span>
-                </div>
-                
-                {/* Skills Preview */}
-                {agent.skills && Object.keys(agent.skills).length > 0 && (
-                  <div className="mt-3">
-                    <div className="text-xs text-steel-400 mb-1">Core Skills:</div>
-                    <div className="flex flex-wrap gap-1">
-                      {Object.entries(agent.skills).slice(0, 3).map(([skill, value]) => (
-                        <span
-                          key={skill}
-                          className={`px-2 py-1 text-xs rounded ${
-                            typeof value === 'number' && value >= 0.9 ? 'bg-green-500/20 text-green-300' :
-                            typeof value === 'number' && value >= 0.7 ? 'bg-neon-blue/20 text-neon-blue' :
-                            typeof value === 'number' && value >= 0.5 ? 'bg-yellow-500/20 text-yellow-300' :
-                            'bg-steel-800 text-steel-300'
-                          }`}
-                        >
-                          {skill.slice(0, 8)}: {typeof value === 'number' ? (value * 100).toFixed(0) + '%' : String(value)}
-                        </span>
-                      ))}
-                      {Object.keys(agent.skills).length > 3 && (
-                        <span className="px-2 py-1 text-xs bg-steel-700 text-steel-400 rounded">
-                          +{Object.keys(agent.skills).length - 3}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-              
-              {/* Signal Trail Effect */}
-              {agent.status === 'working' && (
-                <div className="signal-trail absolute inset-0 rounded-lg pointer-events-none"></div>
-              )}
-            </div>
-          )
-        })}
-      </div>
-
-      {agents.length === 0 && (
-        <div className="text-center py-12">
-          <Brain className="w-16 h-16 text-steel-600 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-steel-300 mb-2">No Agents Deployed</h3>
           <p className="text-steel-500 mb-4">The Legion awaits your command. Spawn your first agent to begin.</p>
           <button
