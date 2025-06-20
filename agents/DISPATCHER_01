@@ -26,3 +26,116 @@ Requires JWT role = "dispatcher"
 All commands use secure edge functions via agent-webhook
 
 API key validation + HMAC signature headers for all task launches
+
+🧱 POSTGRES / SUPABASE SCHEMA
+sql
+Copy
+Edit
+-- AGENTS
+create table agents (
+  id uuid primary key default uuid_generate_v4(),
+  type text,
+  vector_fingerprint vector(1536),
+  skills jsonb,
+  current_state text,
+  updated_at timestamp default now()
+);
+
+-- EMBEDDINGS
+create table embeddings (
+  id uuid primary key default uuid_generate_v4(),
+  agent_id uuid references agents(id),
+  vector vector(1536),
+  metadata jsonb,
+  created_at timestamp default now()
+);
+create index on embeddings using hnsw (vector vector_ops) with (lists = 10);
+
+-- LOGS
+create table logs (
+  id uuid primary key default uuid_generate_v4(),
+  event text,
+  agent_id uuid,
+  payload jsonb,
+  timestamp timestamp default now()
+);
+⚙️ EDGE FUNCTIONS – supabase/functions/
+agent-webhook.ts
+
+Accepts dispatch commands, verifies origin via HMAC, routes to dispatcher.
+
+run-agent-task.ts
+
+Launches agents, reads from commands table if relevant.
+
+save-vector.ts
+
+Receives vectorized payload, stores into embeddings.
+
+query-knowledge.ts
+
+Accepts similarity query, returns top-N results from embeddings.
+
+heartbeat.ts
+
+Uptime logger + response check + rebalance trigger.
+
+🧩 DISPATCHER FILE (Bolt.new/agent/dispatcher.ts)
+ts
+Copy
+Edit
+import { runAgentTask, saveVector, heartbeat, queryKnowledge } from '../functions';
+
+export class DispatcherAgent {
+  constructor(controller, oracle, supabaseClient) {
+    this.controller = controller;
+    this.oracle = oracle;
+    this.db = supabaseClient;
+  }
+
+  async dispatchTask(agentId, missionPayload) {
+    const vector = await this.oracle.vectorizePayload(missionPayload);
+    await saveVector(agentId, vector, { mission: missionPayload });
+    return runAgentTask(agentId, missionPayload);
+  }
+
+  async balanceSwarm() {
+    const agents = await this.db.from('agents').select('*');
+    const overload = agents.filter(a => a.current_state === 'overloaded');
+    if (overload.length > 0) {
+      const idle = agents.find(a => a.current_state === 'idle');
+      if (idle) {
+        return this.reassign(idle.id, overload[0].current_task);
+      }
+    }
+  }
+
+  async reassign(agentId, task) {
+    return this.dispatchTask(agentId, task);
+  }
+
+  async heartbeatCheck() {
+    return heartbeat();
+  }
+}
+📦 FINAL NOTE FOR BOLT.NEW
+Add this in your docs/bolt-metadata.yaml:
+
+yaml
+Copy
+Edit
+projectType: "AI Orchestrator"
+integrations: [Supabase, FastAPI, OpenAI]
+features: [Edge Functions, Agent Autonomy, Real-time SQL]
+deployment: [Vercel, Docker]
+agents:
+  - name: Dispatcher
+    role: Mission router and load balancer
+    edgeFunctions:
+      - run-agent-task
+      - save-vector
+      - heartbeat
+      - query-knowledge
+security:
+  jwt_roles: [super_admin, controller, dispatcher]
+
