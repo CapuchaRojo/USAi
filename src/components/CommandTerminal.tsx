@@ -55,6 +55,7 @@ export const CommandTerminal: React.FC<CommandTerminalProps> = ({
   }
 
   const executeCommand = (command: string) => {
+  const executeCommand = async (command: string) => {
     if (!command.trim()) return
 
     // Add command to history
