@@ -9,6 +9,17 @@ import { CommandTerminal } from './components/CommandTerminal'
 import { AgentStatus } from './components/AgentStatus'
 import { LegionProtocol } from './components/LegionProtocol'
 
+const createCoreAgents = async () => {
+  // Add this guard clause
+  if (!session?.user?.id) {
+    console.error("User session missing - cannot create agents");
+    addEntry('error', 'User authentication required to deploy agents');
+    return;
+  }
+  
+  console.log('Creating core agents for authenticated user:', session.user.email);
+  // ... rest of function
+}
 // src/types.ts
 export interface Agent {
   id: string;
