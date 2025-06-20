@@ -25,7 +25,8 @@
         </div>
         </div>
           <svg>
-      </div>
+       </div>
+
             </text>
       
               {currentPhase}
