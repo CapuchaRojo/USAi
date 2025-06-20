@@ -156,11 +156,11 @@ export const AgentStatus: React.FC<AgentStatusProps> = ({
             <div
               key={agent.id}
               onClick={() => onAgentSelect(selectedAgent?.id === agent.id ? null : agent)}
-              className={`flex items-center p-2 rounded-lg cursor-pointer transition-colors ${
+              className={`
+                flex items-center p-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02]
+                ${getStatusColor(agent.status)}
                 ${selectedAgent?.id === agent.id ? 'ring-2 ring-neon-pink ring-offset-2 ring-offset-steel-900' : ''}
-                  ? 'bg-steel-700' 
-                  : 'hover:bg-steel-800'
-              }`}
+              `}
             >
               <div className={`w-3 h-3 rounded-full mr-2 ${
                 agent.status === 'active' 
@@ -173,7 +173,7 @@ export const AgentStatus: React.FC<AgentStatusProps> = ({
               }`}></div>
               <span className="truncate">{agent.agent_name}</span>
               <span className="ml-auto text-xs text-steel-400 capitalize">{agent.type}</span>
-              </div>
+            </div>
           ))}
           </div>
         </div>
