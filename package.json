@@ -1,0 +1,11 @@
+{
+  "name": "usai-monorepo",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc && tsc-alias"
+  },
+  "devDependencies": {
+    "tsc-alias": "^1.8.4",
+    "typescript": "^5.3.3"
+  }
+}

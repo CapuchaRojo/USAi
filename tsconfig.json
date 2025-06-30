@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "baseUrl": ".", 
+    "paths": {
+      "@supabase/*": ["packages/supabase/*"],
+      "@agents/*": ["packages/agents/*"],
+      "@core/*": ["core/*"],
+      "@bolt/*": ["apps/bolt/src/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}
