@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USAi - Lyrical Genius</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        .gradient-text {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45aaf2, #96ceb4);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient 3s ease infinite;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+        const { Music, Sparkles, BookOpen, Heart, Search, AlertCircle, Zap, Stars } = lucide;
+
+        function USAiApp() {
+            const [songTitle, setSongTitle] = useState('');
+            const [artist, setArtist] = useState('');
+            const [analysis, setAnalysis] = useState('');
+            const [isLoading, setIsLoading] = useState(false);
+            const [error, setError] = useState('');
+
+            const analyzeLyrics = async () => {
+                if (!songTitle.trim() || !artist.trim()) {
+                    setError('Please enter both song title and artist');
+                    return;
+                }
+
+                setIsLoading(true);
+                setError('');
+                setAnalysis('');
+
+                try {
+                    const prompt = `Analyze the song "${songTitle}" by ${artist}. Give me deep insights on:
+
+1. Core themes and emotional messages
+2. Literary techniques (metaphors, symbolism, wordplay)
+3. Cultural significance and context
+4. What makes this song resonate with people
+
+Provide thoughtful analysis in conversational tone. If unfamiliar with the song, be honest.
+
+Respond ONLY with this JSON format:
+{
+  "themes": "detailed themes analysis",
+  "literary_devices": "literary techniques breakdown", 
+  "context": "cultural/historical significance",
+  "interpretation": "why it resonates + personal take",
+  "familiar": true
+}
+
+IMPORTANT: Response must be ONLY valid JSON, no other text.`;
+
+                    const response = await window.claude.complete(prompt);
+                    const jsonResponse = JSON.parse(response);
+                    
+                    if (!jsonResponse.familiar) {
+                        setError(`Sorry, I'm not familiar with "${songTitle}" by ${artist}. Try another song!`);
+                    } else {
+                        setAnalysis(jsonResponse);
+                    }
+                } catch (error) {
+                    console.error('Analysis error:', error);
+                    setError('Analysis failed. Please try again or try a different song.');
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                analyzeLyrics();
+            };
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white relative overflow-hidden">
+                    {/* Background decoration */}
+                    <div className="absolute inset-0 opacity-20">
+                        <div className="absolute top-20 left-20 floating">
+                            <Music className="w-16 h-16 text-purple-400" />
+                        </div>
+                        <div className="absolute top-40 right-32 floating" style={{animationDelay: '1s'}}>
+                            <Stars className="w-12 h-12 text-blue-400" />
+                        </div>
+                        <div className="absolute bottom-32 left-40 floating" style={{animationDelay: '2s'}}>
+                            <Sparkles className="w-14 h-14 text-pink-400" />
+                        </div>
+                    </div>
+
+                    <div className="container mx-auto px-4 py-8 relative z-10">
+                        {/* Header */}
+                        <div className="text-center mb-12">
+                            <div className="flex items-center justify-center mb-6">
+                                <Zap className="w-16 h-16 mr-4 text-yellow-400 floating" />
+                                <h1 className="text-6xl font-black gradient-text">
+                                    USAi
+                                </h1>
+                                <Music className="w-16 h-16 ml-4 text-pink-400 floating" style={{animationDelay: '0.5s'}} />
+                            </div>
+                            <h2 className="text-3xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+                                Lyrical Genius
+                            </h2>
+                            <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                                Uncover the hidden depths of your favorite songs. Our AI analyzes lyrics to reveal themes, 
+                                literary devices, and cultural significance that you might have missed.
+                            </p>
+                        </div>
+
+                        {/* Main Form */}
+                        <div className="max-w-4xl mx-auto">
+                            <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 mb-8 border border-white/10 shadow-2xl">
+                                <form onSubmit={handleSubmit} className="space-y-8">
+                                    <div className="grid md:grid-cols-2 gap-8">
+                                        <div>
+                                            <label htmlFor="songTitle" className="block text-lg font-semibold mb-3 text-gray-200">
+                                                🎵 Song Title
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="songTitle"
+                                                value={songTitle}
+                                                onChange={(e) => setSongTitle(e.target.value)}
+                                                className="w-full px-6 py-4 rounded-2xl bg-white/10 border-2 border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-purple-400/50 focus:border-purple-400 transition-all duration-300 text-lg"
+                                                placeholder="Enter song title..."
+                                            />
+                                        </div>
+                                        <div>
+                                            <label htmlFor="artist" className="block text-lg font-semibold mb-3 text-gray-200">
+                                                🎤 Artist
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="artist"
+                                                value={artist}
+                                                onChange={(e) => setArtist(e.target.value)}
+                                                className="w-full px-6 py-4 rounded-2xl bg-white/10 border-2 border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-purple-400/50 focus:border-purple-400 transition-all duration-300 text-lg"
+                                                placeholder="Enter artist name..."
+                                            />
+                                        </div>
+                                    </div>
+                                    
+                                    <button
+                                        type="submit"
+                                        disabled={isLoading}
+                                        className="w-full py-6 px-8 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white font-bold text-xl rounded-2xl hover:from-purple-400 hover:via-pink-400 hover:to-red-400 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-3 shadow-lg"
+                                    >
+                                        {isLoading ? (
+                                            <>
+                                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                                                <span>Analyzing Lyrics...</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Search className="w-6 h-6" />
+                                                <span>Analyze with AI</span>
+                                                <Sparkles className="w-6 h-6" />
+                                            </>
+                                        )}
+                                    </button>
+                                </form>
+                            </div>
+
+                            {/* Error Display */}
+                            {error && (
+                                <div className="bg-red-500/20 border-2 border-red-500/50 rounded-2xl p-6 mb-8 flex items-center space-x-4 shadow-lg">
+                                    <AlertCircle className="w-8 h-8 text-red-400 flex-shrink-0" />
+                                    <p className="text-red-200 text-lg">{error}</p>
+                                </div>
+                            )}
+
+                            {/* Analysis Results */}
+                            {analysis && (
+                                <div className="space-y-8 animate-fade-in">
+                                    <div className="text-center mb-8">
+                                        <h3 className="text-3xl font-bold gradient-text mb-2">Analysis Complete!</h3>
+                                        <p className="text-gray-300">Here's what I discovered about "{songTitle}" by {artist}</p>
+                                    </div>
+
+                                    <div className="grid lg:grid-cols-2 gap-8">
+                                        <div className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-xl rounded-3xl p-8 border border-blue-300/20 shadow-xl">
+                                            <div className="flex items-center mb-6">
+                                                <Heart className="w-8 h-8 mr-4 text-blue-400" />
+                                                <h4 className="text-2xl font-bold text-blue-300">Core Themes</h4>
+                                            </div>
+                                            <p className="text-gray-200 leading-relaxed text-lg">{analysis.themes}</p>
+                                        </div>
+
+                                        <div className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-xl rounded-3xl p-8 border border-purple-300/20 shadow-xl">
+                                            <div className="flex items-center mb-6">
+                                                <Sparkles className="w-8 h-8 mr-4 text-purple-400" />
+                                                <h4 className="text-2xl font-bold text-purple-300">Literary Craft</h4>
+                                            </div>
+                                            <p className="text-gray-200 leading-relaxed text-lg">{analysis.literary_devices}</p>
+                                        </div>
+
+                                        <div className="bg-gradient-to-br from-green-500/20 to-teal-500/20 backdrop-blur-xl rounded-3xl p-8 border border-green-300/20 shadow-xl">
+                                            <div className="flex items-center mb-6">
+                                                <BookOpen className="w-8 h-8 mr-4 text-green-400" />
+                                                <h4 className="text-2xl font-bold text-green-300">Cultural Impact</h4>
+                                            </div>
+                                            <p className="text-gray-200 leading-relaxed text-lg">{analysis.context}</p>
+                                        </div>
+
+                                        <div className="bg-gradient-to-br from-pink-500/20 to-red-500/20 backdrop-blur-xl rounded-3xl p-8 border border-pink-300/20 shadow-xl">
+                                            <div className="flex items-center mb-6">
+                                                <Stars className="w-8 h-8 mr-4 text-pink-400" />
+                                                <h4 className="text-2xl font-bold text-pink-300">Deep Meaning</h4>
+                                            </div>
+                                            <p className="text-gray-200 leading-relaxed text-lg">{analysis.interpretation}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Add some CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fade-in {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .animate-fade-in {
+                animation: fade-in 0.6s ease-out;
+            }
+        `;
+        document.head.appendChild(style);
+
+        ReactDOM.render(<USAiApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
