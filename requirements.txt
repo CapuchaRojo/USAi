@@ -1,5 +1,6 @@
 # Core project dependencies
-supabase-py==1.0.3              # Supabase Python SDK
+supabase-py==2.14.0
+# Supabase Python SDK
 openai>=1.14.3                  # Latest OpenAI SDK (>=1.x format)
 
 # Environment & server utilities

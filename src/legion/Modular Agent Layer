@@ -1,1 +1,9 @@
+🧬 Modular Agent Layer
 
+Ideal for plug-and-play swarm roles. These agents evolve and repurpose under the Legion Protocol. This layer should house ModularAgent.js or equivalent abstraction template.
+
+🆗 Consider adding:
+
+legion/meta/roles.yaml — Define available agent types and traits
+
+legion/simulations/ — For sandbox evolution testing

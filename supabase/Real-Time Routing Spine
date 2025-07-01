@@ -1,0 +1,3 @@
+Functions, migrations, config—all clean. 
+Keep agent-webhook, run-agent-task, and save-vector wired here. 
+Run supabase functions deploy --all before packaging usai_supa_core.zip.

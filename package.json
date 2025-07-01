@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "usai-monorepo",
   "version": "1.0.0",
   "scripts": {
@@ -7,5 +8,33 @@
   "devDependencies": {
     "tsc-alias": "^1.8.4",
     "typescript": "^5.3.3"
+=======
+  "name": "usai",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "prebuild": "ts-node scripts/validate-exports.ts",
+    "validate": "ts-node scripts/validate-exports.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "lucide-react": "^0.263.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.4.0",
+    "ts-node": "^10.9.1",
+    "@types/node": "^20.10.0",
+    "vite": "^5.1.0"
+>>>>>>> 62ed6c2c9e3bf2f714a759755cb6c6e0e6c6b0ee
   }
 }

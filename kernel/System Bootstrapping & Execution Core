@@ -1,0 +1,7 @@
+This is your genesis seed—the brainstem. agent_loader.py, core.py, and settings.py are in the right place. Ensure core.py defines:
+
+Runtime registry of all active agents
+
+Load balancing interface with Dispatcher
+
+Shared memory linkage with neural_core
